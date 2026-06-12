@@ -1,0 +1,7 @@
+pyttsx3 
+sounddevice 
+numpy 
+speechrecognition 
+vosk 
+pywebview 
+requests 

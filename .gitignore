@@ -1,0 +1,6 @@
+venv/ 
+__pycache__/ 
+*.pyc 
+modelo_voz/ 
+dados/memorias.json 
+dados/configuracoes.json 

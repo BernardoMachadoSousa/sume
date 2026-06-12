@@ -1,0 +1,391 @@
+/* ════════════════════════════════════════════════
+   NEXUS — style.css
+   ✏️ Variáveis editáveis no topo do arquivo
+   ════════════════════════════════════════════════ */
+
+/* ── TOKENS ── edite aqui para mudar o visual todo */
+:root {
+  /* Cores principais */
+  --color-bg:           #0a0a0f;
+  --color-bg-topbar:    #0d0d14;
+  --color-bg-input:     rgba(255, 255, 255, 0.04);
+  --color-border-base:  #1e1535;
+  --color-border-input: rgba(255, 255, 255, 0.09);
+
+  /* Tema roxo — troque por outra cor se quiser */
+  --color-accent:       #8B5CF6;
+  --color-accent-mid:   #7C3AED;
+  --color-accent-light: #A78BFA;
+  --color-accent-glow:  rgba(139, 92, 246, 0.3);
+  --color-accent-glow2: rgba(139, 92, 246, 0.6);
+
+  /* Cor de processando (dourado) */
+  --color-process:      #F59E0B;
+  --color-process-glow: rgba(245, 158, 11, 0.4);
+
+  /* Tipografia */
+  --font:               'Inter', sans-serif;
+  --font-logo-size:     13px;
+  --font-logo-spacing:  3px;
+
+  /* Dimensões — modo widget */
+  --widget-w:           350px;
+  --widget-h:           450px;
+  --circle-size:        140px;
+
+  /* Dimensões — modo tela cheia */
+  --full-circle-size:   200px;
+
+  /* Raios */
+  --radius-window:      14px;
+  --radius-input:       999px;
+
+  /* Animações */
+  --transition:         0.3s ease;
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%; height: 100%;
+  background: transparent;
+  font-family: var(--font);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ════════════════════════════════════════════════
+   CONTAINER PRINCIPAL
+   ════════════════════════════════════════════════ */
+.app {
+  background: var(--color-bg);
+  border: 0.5px solid var(--color-border-base);
+  border-radius: var(--radius-window);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease both;
+}
+
+/* Modo widget */
+.app.widget-mode {
+  width:  var(--widget-w);
+  height: var(--widget-h);
+}
+
+/* Modo tela cheia */
+.app.fullscreen-mode {
+  width:  100vw;
+  height: 100vh;
+  border-radius: 0;
+  border: none;
+  background: radial-gradient(ellipse at 50% 45%, #120e22 0%, var(--color-bg) 65%);
+}
+
+/* ════════════════════════════════════════════════
+   TOPBAR
+   ════════════════════════════════════════════════ */
+.topbar {
+  height: 36px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: var(--color-bg-topbar);
+  border-bottom: 0.5px solid var(--color-border-base);
+  -webkit-app-region: drag; /* arrastar janela no PyWebView */
+  app-region: drag;
+  user-select: none;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.logo-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-accent);
+  box-shadow: 0 0 7px var(--color-accent);
+  flex-shrink: 0;
+}
+
+.logo-text {
+  font-size: var(--font-logo-size);
+  font-weight: 500;
+  letter-spacing: var(--font-logo-spacing);
+  color: #fff;
+}
+
+/* Botões da janela */
+.win-controls {
+  display: flex;
+  gap: 4px;
+  -webkit-app-region: no-drag;
+  app-region: no-drag;
+}
+
+.win-btn {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  color: #555;
+  font-size: 11px;
+  transition: color var(--transition), background var(--transition);
+  line-height: 1;
+}
+
+.win-btn:hover           { color: #fff; background: rgba(255,255,255,0.07); }
+.win-btn.close:hover     { color: #f87171; background: rgba(248,113,113,0.1); }
+
+/* ════════════════════════════════════════════════
+   BODY / ÁREA CENTRAL
+   ════════════════════════════════════════════════ */
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 22px;
+  padding: 24px 20px 28px;
+}
+
+/* ════════════════════════════════════════════════
+   CÍRCULO
+   ════════════════════════════════════════════════ */
+.circle-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+.circle {
+  width:  var(--circle-size);
+  height: var(--circle-size);
+  border-radius: 50%;
+  background: radial-gradient(circle at 38% 32%, #1e1540, #0d0820);
+  border: 2px solid rgba(139, 92, 246, 0.3);
+  box-shadow: 0 0 30px var(--color-accent-glow);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0 14px;
+  cursor: pointer;
+  position: relative;
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+/* Logo centralizada */
+.logo-center {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity var(--transition);
+}
+
+.logo-center img {
+  /* ✏️ ajuste o tamanho da sua logo aqui */
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+}
+
+/* Ícone de mic — pequeno, discreto, na base */
+.mic-area {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 22px;
+}
+
+.mic-icon {
+  width: 18px;
+  height: 18px;
+  color: rgba(255, 255, 255, 0.22);
+  transition: color var(--transition), transform var(--transition);
+  flex-shrink: 0;
+}
+
+/* ── Estados do círculo ── */
+
+/* Parado / pronto */
+.circle.ready {
+  animation: glow 3s ease-in-out infinite;
+}
+
+/* Ouvindo */
+.circle.listening {
+  animation: pulse 1.5s ease-in-out infinite;
+  border-color: rgba(139, 92, 246, 0.8) !important;
+  box-shadow: 0 0 50px var(--color-accent-glow2) !important;
+}
+.circle.listening .mic-icon {
+  color: var(--color-accent-light);
+}
+.circle.listening .logo-center {
+  opacity: 0.7;
+}
+
+/* Processando */
+.circle.processing {
+  animation: spin 3s linear infinite;
+  border-color: rgba(245, 158, 11, 0.8) !important;
+  box-shadow: 0 0 50px var(--color-process-glow) !important;
+}
+.circle.processing .mic-icon {
+  color: rgba(245, 158, 11, 0.5);
+}
+
+/* Hover */
+.circle:hover {
+  border-color: rgba(139, 92, 246, 0.65);
+  box-shadow: 0 0 45px rgba(139, 92, 246, 0.45);
+}
+
+/* Tela cheia: círculo maior */
+.fullscreen-mode .circle {
+  width:  var(--full-circle-size);
+  height: var(--full-circle-size);
+  padding: 26px 0 20px;
+}
+.fullscreen-mode .logo-center img,
+.fullscreen-mode .logo-center svg {
+  width: 80px;
+  height: 80px;
+}
+.fullscreen-mode .mic-icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Texto de status */
+.status-text {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #444;
+  height: 14px;
+  transition: color var(--transition), opacity var(--transition);
+}
+
+.circle.listening  ~ .status-text { color: var(--color-accent-light); }
+.circle.processing ~ .status-text { color: var(--color-process); }
+
+/* ════════════════════════════════════════════════
+   CAIXA DE COMANDO
+   ════════════════════════════════════════════════ */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* ✏️ largura da caixa de comando */
+  width: 72%;
+  max-width: 280px;
+}
+
+.fullscreen-mode .input-row {
+  max-width: 400px;
+  width: 60%;
+}
+
+.cmd-input {
+  flex: 1;
+  height: 36px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-input);
+  border-radius: var(--radius-input);
+  color: #fff;
+  font-family: var(--font);
+  font-size: 12px;
+  padding: 0 14px;
+  outline: none;
+  transition: border-color var(--transition);
+  min-width: 0;
+}
+
+.cmd-input::placeholder { color: #3a3a3a; }
+
+.cmd-input:focus {
+  border-color: rgba(139, 92, 246, 0.5);
+  background: rgba(139, 92, 246, 0.05);
+}
+
+.fullscreen-mode .cmd-input {
+  height: 42px;
+  font-size: 14px;
+}
+
+/* Botão de enviar */
+.send-btn {
+  width: 34px;
+  height: 34px;
+  min-width: 34px;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  color: var(--color-accent);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--transition), border-color var(--transition), color var(--transition);
+}
+
+.send-btn:hover {
+  background: rgba(139, 92, 246, 0.25);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: var(--color-accent-light);
+}
+
+.fullscreen-mode .send-btn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+}
+
+/* ════════════════════════════════════════════════
+   ANIMAÇÕES
+   ════════════════════════════════════════════════ */
+@keyframes pulse {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.05); }
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg);   }
+  to   { transform: rotate(360deg); }
+}
+
+@keyframes glow {
+  0%, 100% { box-shadow: 0 0 28px var(--color-accent-glow);  }
+  50%       { box-shadow: 0 0 48px var(--color-accent-glow2); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0);   }
+}
+
+/* ════════════════════════════════════════════════
+   REDUCED MOTION
+   ════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  .circle.ready,
+  .circle.listening,
+  .circle.processing { animation: none; }
+  .app { animation: none; }
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NEXUS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+
+  <div id="app" class="app widget-mode">
+
+    <!-- ══════════════════ BARRA SUPERIOR ══════════════════ -->
+    <div class="topbar" id="topbar">
+      <div class="logo">
+        <!-- ✏️ Edite o nome da logo aqui -->
+        <span class="logo-dot"></span>
+        <span class="logo-text">NEXUS</span>
+      </div>
+      <div class="win-controls">
+        <button class="win-btn" id="btn-expand"   title="Expandir"  onclick="toggleFullscreen()">&#9633;</button>
+        <button class="win-btn" id="btn-minimize" title="Minimizar" onclick="minimizarJanela()">&#8722;</button>
+        <button class="win-btn close"              title="Fechar"    onclick="fecharJanela()">&#10005;</button>
+      </div>
+    </div>
+
+    <!-- ══════════════════ ÁREA CENTRAL ══════════════════ -->
+    <div class="body">
+
+      <!-- Círculo principal -->
+      <div class="circle-wrap">
+        <div class="circle ready" id="circle" onclick="toggleListening()">
+
+          <!-- ✏️ Substitua esta div pela sua logo -->
+          <div class="logo-center" id="logo-center">
+            <!-- Exemplo: <img src="logo.svg" alt="Logo" /> -->
+            <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="27" cy="27" r="20" stroke="#8B5CF6" stroke-width="2" stroke-opacity="0.8"/>
+              <circle cx="27" cy="27" r="10" fill="#8B5CF6" fill-opacity="0.25"/>
+              <path d="M27 17 L32 24 L27 21 L22 24 Z" fill="#A78BFA"/>
+              <path d="M27 37 L32 30 L27 33 L22 30 Z" fill="#7C3AED"/>
+              <line x1="27" y1="17" x2="27" y2="37" stroke="#8B5CF6" stroke-width="1.5" stroke-opacity="0.5"/>
+            </svg>
+          </div>
+
+          <!-- Ícone mic — fica discreto na parte inferior do círculo -->
+          <div class="mic-area" id="mic-area">
+            <svg class="mic-icon" id="mic-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="9" y="2" width="6" height="11" rx="3"/>
+              <path d="M5 10a7 7 0 0 0 14 0"/>
+              <line x1="12" y1="19" x2="12" y2="22"/>
+              <line x1="9"  y1="22" x2="15" y2="22"/>
+            </svg>
+          </div>
+
+        </div>
+
+        <!-- Texto de status -->
+        <div class="status-text" id="status-text">Pronto</div>
+      </div>
+
+      <!-- Caixa de comando -->
+      <div class="input-row">
+        <input
+          class="cmd-input"
+          id="cmd-input"
+          type="text"
+          placeholder="Comando..."
+          autocomplete="off"
+          onkeydown="onInputKeydown(event)"
+        />
+        <button class="send-btn" id="send-btn" onclick="onSendClick()" aria-label="Enviar">
+          <!-- seta → -->
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="5" y1="12" x2="19" y2="12"/>
+            <polyline points="13 6 19 12 13 18"/>
+          </svg>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="assets/script.js"></script>
+</body>
+</html>
