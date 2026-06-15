@@ -10,7 +10,7 @@ class NexusAPI:
         """Processa comando (voz ou texto) e retorna resposta"""
         resposta = processar(comando)
         if resposta and resposta != "desligar":
-            threading.Thread(target=falar, args=(resposta,), daemon=True).start()
+            falar(resposta)
         if resposta == "desligar":
             threading.Timer(0.5, window.destroy).start()
         return resposta
