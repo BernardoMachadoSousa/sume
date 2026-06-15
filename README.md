@@ -1,36 +1,42 @@
-# ⚡ Sumé — Guia para Desenvolvedores
+# ⚡ Sumé — Assistente Virtual
 
-Este documento é para os integrantes da equipe. Siga as instruções abaixo antes de começar a programar.
+Assistente pessoal com voz, memória e automações.
 
 ---
 
-# 🚀 Primeira configuração
+## 1. O que instalar
 
-## 1. Instalar ferramentas
+| Ferramenta | Link                              | Observação                             |
+| ---------- | --------------------------------- | -------------------------------------- |
+| Python     | https://python.org                | **Marcar "Add to PATH"** na instalação |
+| Git        | https://git-scm.com/downloads/win | Instalação padrão (Next, Next, Finish) |
+| VS Code    | https://code.visualstudio.com     | Editor de código                       |
 
-### Python
+### Conferir se instalou certo
 
-https://python.org
+Abra o **CMD** (Windows + R, digite `cmd`, Enter) e execute:
 
-⚠️ Durante a instalação marque:
-
-```text
-Add Python to PATH
+```bash
+python --version
 ```
 
-### Git
+Deve mostrar `Python 3.10.x` ou superior.
 
-https://git-scm.com/downloads/win
+```bash
+git --version
+```
 
-### VS Code
+Deve mostrar `git version 2.x.x`.
 
-https://code.visualstudio.com
+```bash
+code --version
+```
+
+Deve mostrar a versão do VS Code.
 
 ---
 
 ## 2. Baixar o projeto
-
-Abra o CMD e execute:
 
 ```bash
 git clone https://github.com/BernardoMachadoSousa/sume.git
@@ -39,46 +45,31 @@ cd sume
 
 ---
 
-## 3. Criar ambiente virtual
+## 3. Criar ambiente virtual e instalar dependências
 
 ```bash
 python -m venv venv
 venv\Scripts\activate
-```
-
----
-
-## 4. Instalar dependências
-
-```bash
 pip install -r requirements.txt
 ```
 
 ---
 
-## 5. Baixar o modelo de voz
+## 4. Baixar modelo de voz (Vosk)
 
-Acesse:
+* Link direto: https://alphacephei.com/vosk/models/vosk-model-small-pt-0.3.zip
+* Site com todos os modelos: https://alphacephei.com/vosk/models
 
-https://alphacephei.com/vosk/models
+Passos:
 
-Baixe:
+1. Extraia o `.zip` para dentro da pasta `sume`
+2. Renomeie a pasta extraída para `modelo_voz`
 
-```text
-vosk-model-small-pt-0.3.zip
-```
-
-Extraia para dentro da pasta do projeto.
-
-Renomeie a pasta para:
-
-```text
-modelo_voz
-```
+Deve ficar assim: `C:\Users\seu-usuario\sume\modelo_voz\`
 
 ---
 
-## 6. Criar arquivo de configuração
+## 5. Criar arquivo de configuração
 
 ```bash
 mkdir dados
@@ -87,214 +78,108 @@ echo {"gemini_api_key": ""} > dados\configuracoes.json
 
 ---
 
-## 7. Rodar o projeto
+## 6. Rodar o projeto
 
 ```bash
 python main.py
 ```
 
+Se tudo deu certo, a janela do Sumé vai abrir.
+
 ---
 
-# 📁 Onde alterar cada coisa
+## 📁 Estrutura de pastas
 
-```text
-main.py
+```
+sume/
+├── main.py                 # Inicia o app
+├── requirements.txt        # Bibliotecas necessárias
+├── core/
+│   └── nexus_core.py       # Interpreta comandos
+├── modulos/
+│   ├── memoria.py          # Memória
+│   ├── automacoes.py       # Abrir/fechar apps e sites
+│   └── ia_conversacional.py # IA
+├── utils/
+│   ├── voz.py              # Fala
+│   └── escuta.py           # Escuta
+├── interface/
+│   ├── index.html          # Tela
+│   └── assets/
+│       ├── style.css       # Visual
+│       └── script.js       # Comportamento
+└── dados/
+    └── configuracoes.json  # Chaves
 ```
 
-Inicialização do sistema.
-
 ---
 
-```text
-core/nexus_core.py
+## 🔄 Como usar o Git
+
+### Configurar (só na primeira vez)
+
+```bash
+git config --global user.email "seu-email@gmail.com"
+git config --global user.name "SeuNomeNoGitHub"
 ```
 
-Interpretação dos comandos.
-
----
-
-```text
-modulos/memoria.py
-```
-
-Sistema de memória.
-
----
-
-```text
-modulos/automacoes.py
-```
-
-Abrir e fechar programas, sites e automações.
-
----
-
-```text
-modulos/ia_conversacional.py
-```
-
-Integração com IA.
-
----
-
-```text
-utils/voz.py
-```
-
-Sistema de fala.
-
----
-
-```text
-utils/escuta.py
-```
-
-Reconhecimento de voz.
-
----
-
-```text
-interface/index.html
-```
-
-Estrutura da interface.
-
----
-
-```text
-interface/assets/style.css
-```
-
-Visual da interface.
-
----
-
-```text
-interface/assets/script.js
-```
-
-Comportamento da interface.
-
----
-
-# 🔄 Fluxo obrigatório antes de programar
-
-Sempre execute:
+### Antes de programar
 
 ```bash
 git pull
 ```
 
-Isso garante que você está com a versão mais recente.
-
----
-
-# ✅ Depois de fazer alterações
-
-Teste tudo antes.
-
-Se estiver funcionando:
+### Depois de fazer alterações
 
 ```bash
 git add .
-git commit -m "Descrição da alteração"
+git commit -m "O que você fez"
 git push
 ```
 
-Exemplo:
+---
 
-```bash
-git commit -m "Adicionado comando para abrir calculadora"
-```
+## 🤝 Regras da equipe
+
+1. **Sempre faça **``** antes de começar**
+2. Avise no WhatsApp o que vai mexer
+3. Teste antes de dar `git push`
+4. Não mexa no `main.py` ou `dados/configuracoes.json` sem avisar
+5. Commits em português, objetivos: `"Adicionei comando de clima"`
 
 ---
 
-# ⚠️ Antes de alterar qualquer coisa
+## ❗ Problemas comuns
 
-Avise no grupo:
-
-```text
-Vou trabalhar no módulo de memória.
-```
-
-ou
-
-```text
-Vou alterar a interface.
-```
-
-Assim evitamos conflitos.
+| Erro                        | Solução                                   |
+| --------------------------- | ----------------------------------------- |
+| `pip não é reconhecido`     | Reinstale o Python marcando "Add to PATH" |
+| PowerShell não ativa venv   | Use o **CMD**, não o PowerShell           |
+| `ModuleNotFoundError`       | `pip install nome-do-modulo`              |
+| `modelo_voz não encontrado` | O modelo Vosk não está na pasta correta   |
 
 ---
 
-# 🚫 Não alterar sem avisar
+## 📖 Histórico do projeto
 
-Arquivos críticos:
+Conversa completa com todas as decisões e ideias:
 
-```text
-main.py
-dados/configuracoes.json
-core/nexus_core.py
-```
-
-Se precisar alterar, avise no grupo antes.
+https://chat.deepseek.com/share/6f64u0d6s37xcameki
 
 ---
 
-# 🤝 Regras da equipe
+## 👥 Time
 
-1. Sempre fazer git pull antes de começar.
-2. Avisar no grupo o módulo que será alterado.
-3. Testar antes de fazer push.
-4. Não enviar código quebrado.
-5. Commits em português e objetivos.
-6. Fazer uma alteração por vez.
-7. Em caso de dúvida, perguntar antes de modificar.
-
----
-
-# ❗ Problemas comuns
-
-### pip não é reconhecido
-
-Reinstale o Python marcando:
-
-```text
-Add Python to PATH
-```
-
----
-
-### Não consegue ativar a venv
-
-Use CMD.
-
-Não use PowerShell.
-
----
-
-### ModuleNotFoundError
-
-Instale o módulo faltante:
-
-```bash
-pip install nome-do-modulo
-```
-
----
-
-### modelo_voz não encontrado
-
-Verifique se existe:
-
-```text
-sume/modelo_voz/
-```
-
----
-
-# 👥 Equipe
-
-* Bernardo Machado Sousa 
+* Bernardo Machado Sousa — Coordenação
 * Gabriel Almeida Carvalho
 * Matheus Torquato Gomes
+
+---
+
+Salve (Ctrl+S) e depois no CMD:
+
+```bash
+git add README.md
+git commit -m "README final organizado"
+git push
+```
