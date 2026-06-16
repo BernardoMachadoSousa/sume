@@ -194,7 +194,7 @@ git push
 ### 🟡 Prioridade média
 - [ ] Criar **atalho global** (Ctrl+Espaço) para abrir/fechar o Sumé
 - [ ] Fazer o Sumé **iniciar junto com o Windows**
-- [ ] Implementar **VAD** (detecção de silêncio) para processar comandos automaticamente
+- [x] Implementar **VAD** (detecção de silêncio) para processar comandos automaticamente
 - [ ] Migrar memória de **JSON para SQLite** (mais robusto)
 - [ ] Adicionar **confirmação** antes de ações perigosas (ex: fechar apps)
 
