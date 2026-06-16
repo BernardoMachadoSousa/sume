@@ -188,8 +188,8 @@ git push
 ## 📝 O que falta fazer (colocar um tick no que foi feito )
 
 ### 🔴 Prioridade alta
-- [ ] Substituir voz robótica por **Edge TTS** (voz natural, grátis)
-- [ ] Integrar **IA local com Ollama** (Phi-3 Mini) para conversas offline
+- [X] Substituir voz robótica por **Edge TTS** (voz natural, grátis)
+- [x] Integrar **IA local com Ollama** (Phi-3 Mini) para conversas offline
 
 ### 🟡 Prioridade média
 - [ ] Criar **atalho global** (Ctrl+Espaço) para abrir/fechar o Sumé
