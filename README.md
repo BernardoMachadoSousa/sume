@@ -183,3 +183,33 @@ git add README.md
 git commit -m "README final organizado"
 git push
 ```
+
+
+## 📝 O que falta fazer (colocar um tick no que foi feito )
+
+### 🔴 Prioridade alta
+- [ ] Substituir voz robótica por **Edge TTS** (voz natural, grátis)
+- [ ] Integrar **IA local com Ollama** (Phi-3 Mini) para conversas offline
+
+### 🟡 Prioridade média
+- [ ] Criar **atalho global** (Ctrl+Espaço) para abrir/fechar o Sumé
+- [ ] Fazer o Sumé **iniciar junto com o Windows**
+- [ ] Implementar **VAD** (detecção de silêncio) para processar comandos automaticamente
+- [ ] Migrar memória de **JSON para SQLite** (mais robusto)
+- [ ] Adicionar **confirmação** antes de ações perigosas (ex: fechar apps)
+
+### 🟢 Futuro
+- [ ] **Leitura de tela** com OCR ("Sumé, o que está na minha tela?")
+- [ ] **Sistema de plugins/skills** para adicionar funções sem mexer no core
+- [ ] **Automação de navegador** (Playwright) para pesquisar e interagir com sites
+- [ ] **Dashboard completo** com chat, tarefas, calendário e status do PC
+- [ ] **Integração com Alexa** (Wake-on-LAN para ligar o PC)
+- [ ] **Visão computacional** com câmera
+- [ ] **Integração com Spotify, WhatsApp, Gmail**
+
+### 💡 Ideias
+- [ ] Modo mãos-livres total (palavra de ativação "Sumé")
+- [ ] Múltiplos idiomas (inglês, espanhol)
+- [ ] Agentes especializados (programador, pesquisador, estudos)
+- [ ] Interface com temas customizáveis
+- [ ] Histórico de conversas com busca

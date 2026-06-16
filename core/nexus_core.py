@@ -1,7 +1,7 @@
 from modulos.memoria import processar_memoria
 from modulos.memoria import carregar as carregar_memorias
 from modulos.automacoes import executar
-from modulos.ia_conversacional import perguntar_ia
+from modulos.ia_conversacional import conversar, limpar_historico
 
 def processar(comando: str) -> str:
     comando = comando.lower().strip()
@@ -44,9 +44,6 @@ def processar(comando: str) -> str:
         return "desligar"
 
     # IA Conversacional (fallback para qualquer outra coisa)
-    contexto = ""
     memorias = carregar_memorias()
-    if memorias:
-        contexto = "\n".join([f"{k}: {v}" for k, v in memorias.items()])
-
-    return perguntar_ia(comando, contexto)
+    nome = memorias.get("nome_usuario") if memorias else None
+    return conversar(comando, nome_usuario=nome)

@@ -35,21 +35,23 @@ function setCircleState(state) {
 // MICROFONE / VOZ
 // ════════════════════════════════════════════════
 
-async function toggleListening() {
-  if (isProcessing) return;
-  if (isListening) return; // já está ouvindo, ignora novo clique
+// ════════════════════════════════════════════════
+// MICROFONE / VOZ (Push-to-Talk + VAD)
+// ════════════════════════════════════════════════
+
+let pushToTalkActive = false;
+
+async function startListening() {
+  if (isProcessing || isListening) return;
 
   isListening = true;
   setCircleState('listening');
 
   try {
-    // Chama a API Python (PyWebView)
-    // window.pywebview.api.ouvir_comando() deve retornar o texto reconhecido
     let texto = '';
     if (window.pywebview) {
       texto = await window.pywebview.api.ouvir_comando();
     } else {
-      // fallback de desenvolvimento — simula delay
       await delay(2000);
       texto = 'comando de teste';
     }
@@ -64,8 +66,14 @@ async function toggleListening() {
     showStatus('Erro ao ouvir', 1800);
   } finally {
     isListening = false;
+    pushToTalkActive = false;
     setCircleState('ready');
   }
+}
+
+function toggleListening() {
+  if (pushToTalkActive) return;
+  startListening();
 }
 
 // ════════════════════════════════════════════════
@@ -170,16 +178,30 @@ function fecharJanela() {
   }
 }
 
+
 // ════════════════════════════════════════════════
-// TECLAS GLOBAIS
+// TECLAS GLOBAIS + PUSH-TO-TALK
 // ════════════════════════════════════════════════
 
 document.addEventListener('keydown', (e) => {
+  // ESC: sair da tela cheia ou minimizar
   if (e.key === 'Escape') {
+    e.preventDefault();
     if (isFullscreen) {
       toggleFullscreen();
     } else {
       minimizarJanela();
+    }
+    return;
+  }
+
+  // Espaço: push-to-talk (segurar para falar)
+  if (e.key === ' ' && !isProcessing && !isListening && !pushToTalkActive) {
+    e.preventDefault();
+    const inputFocado = document.activeElement === cmdInput;
+    if (!inputFocado) {
+      pushToTalkActive = true;
+      startListening();
     }
   }
 });
