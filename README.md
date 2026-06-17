@@ -201,7 +201,7 @@ git push
 ---
 
 ### 🔴 Fase 1 — Estabilidade e Organização
-- [ ] **Corrigir inconsistência `nome` vs `nome_usuario`**
+- [x] **Corrigir inconsistência `nome` vs `nome_usuario`**
 - [ ] **Sistema de logs** (comandos, intents, resultados, tempo, erros)
 - [ ] **Centralizar interpretação no Core** (remover do memoria.py)
 - [ ] **Substituir todos `except: pass`** por tratamento com log

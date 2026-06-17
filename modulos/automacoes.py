@@ -1,27 +1,22 @@
 import subprocess
 import webbrowser
 import os
+import json
+from utils.logger import erro as log_erro
 
-def _abrir(nome: str) -> str:
-    """Abre programa, atalho ou site."""
-    n = nome.lower().strip()
-    
-    # Executáveis do Windows
-    exes = {
-        "calc": "calc.exe", "calculadora": "calc.exe",
-        "notepad": "notepad.exe", "notas": "notepad.exe", "bloco": "notepad.exe",
-        "cmd": "cmd.exe", "terminal": "cmd.exe", "prompt": "cmd.exe",
-        "explorer": "explorer.exe", "explorador": "explorer.exe", "arquivos": "explorer.exe",
-        "word": "winword.exe", "excel": "excel.exe", "powerpoint": "powerpnt.exe",
-        "paint": "mspaint.exe",
-    }
-    
-    for chave, exe in exes.items():
-        if chave in n:
-            subprocess.Popen(exe, shell=True)
-            return f"Abrindo {chave}."
-    
-    # Atalhos do Menu Iniciar (Steam, Discord, etc.)
+CATALOGO_CACHE = "dados/catalogo_programas.json"
+
+def _carregar_catalogo() -> dict:
+    if os.path.exists(CATALOGO_CACHE):
+        try:
+            with open(CATALOGO_CACHE, "r", encoding="utf-8") as f:
+                return json.load(f)
+        except:
+            pass
+    return _gerar_catalogo()
+
+def _gerar_catalogo() -> dict:
+    catalogo = {}
     pastas = [
         os.path.expanduser("~/AppData/Roaming/Microsoft/Windows/Start Menu/Programs"),
         "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
@@ -30,13 +25,42 @@ def _abrir(nome: str) -> str:
         try:
             for raiz, _, arquivos in os.walk(pasta):
                 for arq in arquivos:
-                    if n in arq.lower().replace(".lnk","").replace(".url",""):
-                        os.startfile(os.path.join(raiz, arq))
-                        return f"Abrindo {arq.replace('.lnk','').replace('.url','')}."
-        except:
-            pass
+                    nome = arq.lower().replace(".lnk", "").replace(".url", "")
+                    caminho = os.path.join(raiz, arq)
+                    catalogo[nome] = caminho
+        except Exception as e:
+            log_erro("automacoes", f"Catálogo: {e}")
     
-    # Site
+    os.makedirs("dados", exist_ok=True)
+    with open(CATALOGO_CACHE, "w", encoding="utf-8") as f:
+        json.dump(catalogo, f, indent=2, ensure_ascii=False)
+    
+    return catalogo
+
+CATALOGO = _carregar_catalogo()
+
+
+def _abrir(nome: str) -> str:
+    n = nome.lower().strip()
+    
+    exes = {
+        "calc": "calc.exe", "calculadora": "calc.exe",
+        "notepad": "notepad.exe", "notas": "notepad.exe", "bloco": "notepad.exe",
+        "cmd": "cmd.exe", "terminal": "cmd.exe", "prompt": "cmd.exe",
+        "explorer": "explorer.exe", "explorador": "explorer.exe", "arquivos": "explorer.exe",
+        "word": "winword.exe", "excel": "excel.exe", "powerpoint": "powerpnt.exe",
+        "paint": "mspaint.exe",
+    }
+    for chave, exe in exes.items():
+        if chave in n:
+            subprocess.Popen(exe, shell=True)
+            return f"Abrindo {chave}."
+    
+    for nome_atalho, caminho in CATALOGO.items():
+        if n in nome_atalho:
+            os.startfile(caminho)
+            return f"Abrindo {nome_atalho}."
+    
     if " " not in n:
         webbrowser.open(f"https://www.{n}.com")
         return f"Abrindo {n}.com."
@@ -44,10 +68,8 @@ def _abrir(nome: str) -> str:
     return f"Não encontrei '{nome}'."
 
 def _fechar(nome: str) -> str:
-    """Fecha um processo em execução."""
     n = nome.lower().strip()
     
-    # Nome do processo para apps comuns
     processos = {
         "calc": "CalculatorApp.exe", "calculadora": "CalculatorApp.exe",
         "notepad": "notepad.exe", "notas": "notepad.exe", "bloco": "notepad.exe",
@@ -61,7 +83,6 @@ def _fechar(nome: str) -> str:
             os.system(f"taskkill /f /im {proc} 2>nul")
             return f"{chave} fechado."
     
-    # Busca processo em execução
     try:
         r = subprocess.run('tasklist /fo csv /nh', shell=True, capture_output=True, text=True)
         for linha in r.stdout.splitlines():
@@ -69,8 +90,8 @@ def _fechar(nome: str) -> str:
                 p = linha.split('","')[0].strip('"')
                 os.system(f"taskkill /f /im {p} 2>nul")
                 return f"{nome} fechado."
-    except:
-        pass
+    except Exception as e:
+        log_erro("automacoes", f"tasklist: {e}")
     
     os.system(f'taskkill /f /fi "IMAGENAME eq *{n}*" 2>nul')
     return f"Tentei fechar {nome}."

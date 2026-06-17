@@ -1,0 +1,44 @@
+[2026-06-17 14:08:33] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 14:08:33] RESULTADO: SUCESSO | São 14:08. | 1ms
+[2026-06-17 14:12:10] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 14:12:10] RESULTADO: SUCESSO | São 14:12. | 1ms
+[2026-06-17 14:13:24] INTENT: abrir -> 'discord.' (confianca=1.0)
+[2026-06-17 14:13:24] RESULTADO: SUCESSO | Abrindo discord..com. | 105ms
+[2026-06-17 14:14:25] INTENT: abrir -> 'figma.' (confianca=1.0)
+[2026-06-17 14:14:25] RESULTADO: SUCESSO | Abrindo figma..com. | 33ms
+[2026-06-17 14:16:22] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 14:16:22] RESULTADO: SUCESSO | Abrindo discord. | 110ms
+[2026-06-17 14:16:45] INTENT: abrir -> 'discord.' (confianca=1.0)
+[2026-06-17 14:16:45] RESULTADO: SUCESSO | Abrindo discord..com. | 92ms
+[2026-06-17 14:16:55] INTENT: abrir -> 'discord.' (confianca=1.0)
+[2026-06-17 14:16:55] RESULTADO: SUCESSO | Abrindo discord..com. | 28ms
+[2026-06-17 14:17:11] INTENT: abrir -> 'discord.' (confianca=1.0)
+[2026-06-17 14:17:11] RESULTADO: SUCESSO | Abrindo discord..com. | 29ms
+[2026-06-17 14:20:00] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 14:20:00] RESULTADO: SUCESSO | Abrindo discord. | 119ms
+[2026-06-17 14:20:25] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 14:20:25] RESULTADO: SUCESSO | Abrindo discord. | 57ms
+[2026-06-17 14:20:36] INTENT: abrir -> 'figma' (confianca=1.0)
+[2026-06-17 14:20:36] RESULTADO: SUCESSO | Abrindo figma. | 78ms
+[2026-06-17 14:20:51] INTENT: conversa -> 'abri youtube!' (confianca=1.0)
+[2026-06-17 14:20:51] RESULTADO: SUCESSO | Desculpe, não consegui processar isso agora. O Ollama está rodando? | 168ms
+[2026-06-17 14:21:04] INTENT: abrir -> 'autocad' (confianca=1.0)
+[2026-06-17 14:21:04] RESULTADO: SUCESSO | Abrindo autocad 2025 - english. | 318ms
+[2026-06-17 14:21:25] INTENT: abrir -> 'discord.' (confianca=1.0)
+[2026-06-17 14:21:25] RESULTADO: SUCESSO | Abrindo discord..com. | 102ms
+[2026-06-17 14:55:22] INTENT: abrir -> 'figma.' (confianca=1.0)
+[2026-06-17 14:55:22] RESULTADO: SUCESSO | Abrindo figma..com. | 34ms
+[2026-06-17 14:55:46] INTENT: abrir -> 'figma' (confianca=1.0)
+[2026-06-17 14:55:46] RESULTADO: SUCESSO | Abrindo figma. | 189ms
+[2026-06-17 14:56:25] INTENT: abrir -> 'figma' (confianca=1.0)
+[2026-06-17 14:56:25] RESULTADO: SUCESSO | Abrindo figma. | 65ms
+[2026-06-17 14:56:40] INTENT: abrir -> 'autocad' (confianca=1.0)
+[2026-06-17 14:56:40] RESULTADO: SUCESSO | Abrindo autocad 2025 - english. | 212ms
+[2026-06-17 14:56:58] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 14:56:58] RESULTADO: SUCESSO | Abrindo discord. | 92ms
+[2026-06-17 14:57:15] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 14:57:15] RESULTADO: SUCESSO | Abrindo discord. | 55ms
+[2026-06-17 14:57:34] INTENT: abrir -> 'vai de meco.' (confianca=1.0)
+[2026-06-17 14:57:34] RESULTADO: SUCESSO | Não encontrei 'vai de meco.'. | 1ms
+[2026-06-17 14:57:44] INTENT: abrir -> 'vai de meco.' (confianca=1.0)
+[2026-06-17 14:57:44] RESULTADO: SUCESSO | Não encontrei 'vai de meco.'. | 1ms
