@@ -185,17 +185,19 @@ git push
 ```
 
 
-## 📝 O que falta fazer (colocar um tick no que foi feito )
+## 📝 O que já foi feito e o que falta
 
 ### 🔴 Prioridade alta
-- [X] Substituir voz robótica por **Edge TTS** (voz natural, grátis)
+- [x] Substituir voz robótica por **Edge TTS** (voz natural, grátis)
 - [x] Integrar **IA local com Ollama** (Phi-3 Mini) para conversas offline
 
 ### 🟡 Prioridade média
 - [ ] Criar **atalho global** (Ctrl+Espaço) para abrir/fechar o Sumé
 - [ ] Fazer o Sumé **iniciar junto com o Windows**
 - [x] Implementar **VAD** (detecção de silêncio) para processar comandos automaticamente
-- [ ] Migrar memória de **JSON para SQLite** (mais robusto)
+- [x] Substituir Vosk por **Whisper** (reconhecimento de voz preciso)
+- [x] **Push-to-talk** (segurar Espaço para falar)
+- [x] Migrar memória de **JSON para SQLite** (mais robusto)
 - [ ] Adicionar **confirmação** antes de ações perigosas (ex: fechar apps)
 
 ### 🟢 Futuro
