@@ -41,7 +41,9 @@ CATALOGO = _carregar_catalogo()
 
 
 def _abrir(nome: str) -> str:
+    import re
     n = nome.lower().strip()
+    n = re.sub(r'[^\w\s]', '', n)  # remove pontuação
     
     exes = {
         "calc": "calc.exe", "calculadora": "calc.exe",

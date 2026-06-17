@@ -42,3 +42,9 @@
 [2026-06-17 14:57:34] RESULTADO: SUCESSO | Não encontrei 'vai de meco.'. | 1ms
 [2026-06-17 14:57:44] INTENT: abrir -> 'vai de meco.' (confianca=1.0)
 [2026-06-17 14:57:44] RESULTADO: SUCESSO | Não encontrei 'vai de meco.'. | 1ms
+[2026-06-17 15:03:42] INTENT: abrir -> 'desco voor embroider.' (confianca=1.0)
+[2026-06-17 15:03:42] RESULTADO: SUCESSO | Não encontrei 'desco voor embroider.'. | 1ms
+[2026-06-17 15:03:52] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 15:03:52] RESULTADO: SUCESSO | Abrindo discord. | 108ms
+[2026-06-17 15:06:17] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 15:06:17] RESULTADO: SUCESSO | Abrindo discord. | 61ms

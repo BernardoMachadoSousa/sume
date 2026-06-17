@@ -200,32 +200,47 @@ git push
 
 ---
 
+## 📋 Tarefas do Sumé
+
+### ✅ Concluído
+- [x] Edge TTS (voz natural Antônio)
+- [x] Ollama + Phi-3 Mini (IA local)
+- [x] Whisper (reconhecimento de voz)
+- [x] VAD (detecção de silêncio)
+- [x] Push-to-talk (segurar Espaço)
+- [x] SQLite (substituiu JSON)
+- [x] Automações inteligentes (abrir/fechar programas)
+- [x] Pré-carregamento do Whisper
+- [x] Atalhos de desenvolvimento
+- [x] Corrigir inconsistência `nome` vs `nome_usuario`
+- [x] Sistema de logs (comandos, intents, resultados, erros)
+- [x] Remover `except: pass` (tratamento com log)
+- [x] Catálogo/cache de programas (Menu Iniciar)
+
+---
+
 ### 🔴 Fase 1 — Estabilidade e Organização
-- [x] **Corrigir inconsistência `nome` vs `nome_usuario`**
-- [ ] **Sistema de logs** (comandos, intents, resultados, tempo, erros)
 - [ ] **Centralizar interpretação no Core** (remover do memoria.py)
-- [ ] **Substituir todos `except: pass`** por tratamento com log
-- [ ] **Catálogo/cache de programas** (escanear Menu Iniciar uma vez)
 - [ ] **Tratamento padronizado de resultados** (classe Resultado)
 
 ### 🟡 Fase 2 — Preparação para Crescimento
-- [ ] **Sistema de intenções** (core/intents/ com módulos separados)
-- [ ] **Configurações persistentes** (dados/config.json)
-- [ ] **Modo desenvolvedor** (painel de depuração)
-- [ ] **DeepSeek API** como IA principal (fallback Phi-3)
+- [ ] Sistema de intenções (core/intents/)
+- [ ] Configurações persistentes (dados/config.json)
+- [ ] Modo desenvolvedor
+- [ ] DeepSeek API como IA principal
 
 ### 🟢 Fase 3 — Experiência do Usuário
-- [ ] **Correção inteligente de voz** (IA corrige erros do Whisper)
-- [ ] **Histórico visual** de conversas na interface
-- [ ] **Atalho global** Ctrl+Espaço
-- [ ] **Feedback sonoro** (início/fim da escuta, erro)
+- [ ] Correção inteligente de voz
+- [ ] Histórico visual de conversas
+- [ ] Atalho global Ctrl+Espaço
+- [ ] Feedback sonoro
 
 ### 🔵 Fase 4 — Utilidade Real
-- [ ] **Memória contextual** (projetos, objetivos, preferências)
-- [ ] **Agendamentos e lembretes**
-- [ ] **Busca inteligente** no computador
-- [ ] **Comandos compostos**
-- [ ] **Central de conhecimento pessoal**
+- [ ] Memória contextual
+- [ ] Agendamentos e lembretes
+- [ ] Busca inteligente no computador
+- [ ] Comandos compostos
+- [ ] Central de conhecimento pessoal
 
 ### 🟣 Fase 5 — Escalabilidade
 - [ ] Sistema de plugins
@@ -234,7 +249,7 @@ git push
 - [ ] Camada de serviços
 - [ ] Testes automatizados
 
-### ⚫ Fase 6 — Avançado (só depois das anteriores)
+### ⚫ Fase 6 — Avançado
 - [ ] Palavra de ativação "Sumé"
 - [ ] OCR e leitura de tela
 - [ ] Automação de navegador
