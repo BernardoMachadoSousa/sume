@@ -185,33 +185,59 @@ git push
 ```
 
 
-## 📝 O que já foi feito e o que falta
+## 📋 Tarefas do Sumé
 
-### 🔴 Prioridade alta
-- [x] Substituir voz robótica por **Edge TTS** (voz natural, grátis)
-- [x] Integrar **IA local com Ollama** (Phi-3 Mini) para conversas offline
+### ✅ Concluído
+- [x] Edge TTS (voz natural Antônio)
+- [x] Ollama + Phi-3 Mini (IA local)
+- [x] Whisper (reconhecimento de voz)
+- [x] VAD (detecção de silêncio)
+- [x] Push-to-talk (segurar Espaço)
+- [x] SQLite (substituiu JSON)
+- [x] Automações inteligentes (abrir/fechar programas)
+- [x] Pré-carregamento do Whisper
+- [x] Atalhos de desenvolvimento
 
-### 🟡 Prioridade média
-- [ ] Criar **atalho global** (Ctrl+Espaço) para abrir/fechar o Sumé
-- [ ] Fazer o Sumé **iniciar junto com o Windows**
-- [x] Implementar **VAD** (detecção de silêncio) para processar comandos automaticamente
-- [x] Substituir Vosk por **Whisper** (reconhecimento de voz preciso)
-- [x] **Push-to-talk** (segurar Espaço para falar)
-- [x] Migrar memória de **JSON para SQLite** (mais robusto)
-- [ ] Adicionar **confirmação** antes de ações perigosas (ex: fechar apps)
+---
 
-### 🟢 Futuro
-- [ ] **Leitura de tela** com OCR ("Sumé, o que está na minha tela?")
-- [ ] **Sistema de plugins/skills** para adicionar funções sem mexer no core
-- [ ] **Automação de navegador** (Playwright) para pesquisar e interagir com sites
-- [ ] **Dashboard completo** com chat, tarefas, calendário e status do PC
-- [ ] **Integração com Alexa** (Wake-on-LAN para ligar o PC)
-- [ ] **Visão computacional** com câmera
-- [ ] **Integração com Spotify, WhatsApp, Gmail**
+### 🔴 Fase 1 — Estabilidade e Organização
+- [ ] **Corrigir inconsistência `nome` vs `nome_usuario`**
+- [ ] **Sistema de logs** (comandos, intents, resultados, tempo, erros)
+- [ ] **Centralizar interpretação no Core** (remover do memoria.py)
+- [ ] **Substituir todos `except: pass`** por tratamento com log
+- [ ] **Catálogo/cache de programas** (escanear Menu Iniciar uma vez)
+- [ ] **Tratamento padronizado de resultados** (classe Resultado)
 
-### 💡 Ideias
-- [ ] Modo mãos-livres total (palavra de ativação "Sumé")
-- [ ] Múltiplos idiomas (inglês, espanhol)
-- [ ] Agentes especializados (programador, pesquisador, estudos)
-- [ ] Interface com temas customizáveis
-- [ ] Histórico de conversas com busca
+### 🟡 Fase 2 — Preparação para Crescimento
+- [ ] **Sistema de intenções** (core/intents/ com módulos separados)
+- [ ] **Configurações persistentes** (dados/config.json)
+- [ ] **Modo desenvolvedor** (painel de depuração)
+- [ ] **DeepSeek API** como IA principal (fallback Phi-3)
+
+### 🟢 Fase 3 — Experiência do Usuário
+- [ ] **Correção inteligente de voz** (IA corrige erros do Whisper)
+- [ ] **Histórico visual** de conversas na interface
+- [ ] **Atalho global** Ctrl+Espaço
+- [ ] **Feedback sonoro** (início/fim da escuta, erro)
+
+### 🔵 Fase 4 — Utilidade Real
+- [ ] **Memória contextual** (projetos, objetivos, preferências)
+- [ ] **Agendamentos e lembretes**
+- [ ] **Busca inteligente** no computador
+- [ ] **Comandos compostos**
+- [ ] **Central de conhecimento pessoal**
+
+### 🟣 Fase 5 — Escalabilidade
+- [ ] Sistema de plugins
+- [ ] Perfis de usuário
+- [ ] Dashboard administrativo
+- [ ] Camada de serviços
+- [ ] Testes automatizados
+
+### ⚫ Fase 6 — Avançado (só depois das anteriores)
+- [ ] Palavra de ativação "Sumé"
+- [ ] OCR e leitura de tela
+- [ ] Automação de navegador
+- [ ] Modo reunião
+- [ ] Resumo automático do dia
+- [ ] Multiagentes
