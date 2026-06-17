@@ -2,88 +2,101 @@ import subprocess
 import webbrowser
 import os
 
-PROGRAMAS = {
-    "calculadora": "calc.exe",
-    "notas": "notepad.exe",
-    "bloco": "notepad.exe",
-    "explorador": "explorer.exe",
-    "cmd": "cmd.exe",
-    "terminal": "cmd.exe",
-    "powerpoint": "powerpnt.exe",
-    "word": "winword.exe",
-    "excel": "excel.exe",
-    "paint": "mspaint.exe",
-    "navegador": "https://google.com",
-    "chrome": "chrome.exe",
-}
+def _abrir(nome: str) -> str:
+    """Abre programa, atalho ou site."""
+    n = nome.lower().strip()
+    
+    # Executáveis do Windows
+    exes = {
+        "calc": "calc.exe", "calculadora": "calc.exe",
+        "notepad": "notepad.exe", "notas": "notepad.exe", "bloco": "notepad.exe",
+        "cmd": "cmd.exe", "terminal": "cmd.exe", "prompt": "cmd.exe",
+        "explorer": "explorer.exe", "explorador": "explorer.exe", "arquivos": "explorer.exe",
+        "word": "winword.exe", "excel": "excel.exe", "powerpoint": "powerpnt.exe",
+        "paint": "mspaint.exe",
+    }
+    
+    for chave, exe in exes.items():
+        if chave in n:
+            subprocess.Popen(exe, shell=True)
+            return f"Abrindo {chave}."
+    
+    # Atalhos do Menu Iniciar (Steam, Discord, etc.)
+    pastas = [
+        os.path.expanduser("~/AppData/Roaming/Microsoft/Windows/Start Menu/Programs"),
+        "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
+    ]
+    for pasta in pastas:
+        try:
+            for raiz, _, arquivos in os.walk(pasta):
+                for arq in arquivos:
+                    if n in arq.lower().replace(".lnk","").replace(".url",""):
+                        os.startfile(os.path.join(raiz, arq))
+                        return f"Abrindo {arq.replace('.lnk','').replace('.url','')}."
+        except:
+            pass
+    
+    # Site
+    if " " not in n:
+        webbrowser.open(f"https://www.{n}.com")
+        return f"Abrindo {n}.com."
+    
+    return f"Não encontrei '{nome}'."
 
-SITES = {
-    "youtube": "https://youtube.com",
-    "google": "https://google.com",
-    "github": "https://github.com",
-    "gmail": "https://gmail.com",
-    "netflix": "https://netflix.com",
-    "spotify": "https://open.spotify.com",
-}
+def _fechar(nome: str) -> str:
+    """Fecha um processo em execução."""
+    n = nome.lower().strip()
+    
+    # Nome do processo para apps comuns
+    processos = {
+        "calc": "CalculatorApp.exe", "calculadora": "CalculatorApp.exe",
+        "notepad": "notepad.exe", "notas": "notepad.exe", "bloco": "notepad.exe",
+        "cmd": "cmd.exe", "terminal": "cmd.exe",
+        "explorer": "explorer.exe", "explorador": "explorer.exe", "arquivos": "explorer.exe",
+        "chrome": "chrome.exe", "word": "winword.exe", "excel": "excel.exe",
+    }
+    
+    for chave, proc in processos.items():
+        if chave in n:
+            os.system(f"taskkill /f /im {proc} 2>nul")
+            return f"{chave} fechado."
+    
+    # Busca processo em execução
+    try:
+        r = subprocess.run('tasklist /fo csv /nh', shell=True, capture_output=True, text=True)
+        for linha in r.stdout.splitlines():
+            if n in linha.lower():
+                p = linha.split('","')[0].strip('"')
+                os.system(f"taskkill /f /im {p} 2>nul")
+                return f"{nome} fechado."
+    except:
+        pass
+    
+    os.system(f'taskkill /f /fi "IMAGENAME eq *{n}*" 2>nul')
+    return f"Tentei fechar {nome}."
 
 def executar(comando: str) -> str | None:
-    comando = comando.lower().strip()
-
-    if "abrir" in comando or "abra" in comando:
-        alvo = comando.replace("abrir", "").replace("abra", "").replace("o ", "").replace("a ", "").strip()
-
-        # Tenta programas
-        for nome, cmd in PROGRAMAS.items():
-            if nome in alvo:
-                try:
-                    if cmd.startswith("http"):
-                        webbrowser.open(cmd)
-                    else:
-                        subprocess.Popen(cmd, shell=True)
-                    return f"Abrindo {nome}."
-                except:
-                    return f"Não consegui abrir {nome}."
-
-        # Tenta sites
-        for nome, url in SITES.items():
-            if nome in alvo:
-                webbrowser.open(url)
-                return f"Abrindo {nome}."
-
-        # Site genérico
-        if "." in alvo or " " not in alvo:
-            webbrowser.open(f"https://{alvo}.com")
-            return f"Tentando abrir {alvo}.com"
-
-        return f"Não encontrei o programa: {alvo}"
-
-    if "fechar" in comando or "feche" in comando:
-        alvo = comando.replace("fechar", "").replace("feche", "").replace("o ", "").replace("a ", "").strip()
-
-        mapeamento_fechar = {
-            "chrome": "chrome.exe",
-            "notas": "notepad.exe",
-            "bloco": "notepad.exe",
-            "calculadora": "calculator.exe",
-            "cmd": "cmd.exe",
+    c = comando.lower().strip()
+    
+    if c.startswith("abrir ") or c.startswith("abra ") or c.startswith("abre "):
+        alvo = c.split(" ", 1)[1] if " " in c else ""
+        return _abrir(alvo) if alvo else "O que quer abrir?"
+    
+    if c.startswith("fechar ") or c.startswith("fecha ") or c.startswith("feche "):
+        alvo = c.split(" ", 1)[1] if " " in c else ""
+        return _fechar(alvo) if alvo else "O que quer fechar?"
+    
+    if "pasta" in c:
+        map_pastas = {
+            "documentos": "Documents", "downloads": "Downloads",
+            "área de trabalho": "Desktop", "desktop": "Desktop",
+            "imagens": "Pictures", "fotos": "Pictures",
+            "música": "Music", "musica": "Music",
+            "vídeos": "Videos", "videos": "Videos",
         }
-
-        for nome, processo in mapeamento_fechar.items():
-            if nome in alvo:
-                os.system(f"taskkill /f /im {processo} 2>nul")
-                return f"{nome} fechado."
-
-        return f"Ainda não sei fechar {alvo}."
-
-    if "pasta" in comando:
-        if "documentos" in comando:
-            os.startfile(os.path.expanduser("~/Documents"))
-            return "Abrindo pasta Documentos."
-        if "downloads" in comando:
-            os.startfile(os.path.expanduser("~/Downloads"))
-            return "Abrindo pasta Downloads."
-        if "área de trabalho" in comando or "desktop" in comando:
-            os.startfile(os.path.expanduser("~/Desktop"))
-            return "Abrindo Área de Trabalho."
-
+        for k, v in map_pastas.items():
+            if k in c:
+                os.startfile(os.path.expanduser(f"~/{v}"))
+                return f"Abrindo {v}."
+    
     return None

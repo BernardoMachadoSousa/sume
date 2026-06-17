@@ -1,81 +1,81 @@
+"""
+Módulo de reconhecimento de voz do Sumé.
+Whisper local + VAD (detecção de silêncio).
+"""
+
 import sounddevice as sd
 import numpy as np
-import vosk
-import speech_recognition as sr
-import json
-import os
-import io
-import wave
+import whisper
+import threading
+import time
 
-# ========== VOSK (offline) ==========
-modelo_path = os.path.join(os.path.dirname(__file__), "..", "modelo_voz")
-vosk_disponivel = os.path.exists(modelo_path)
+MODELO = "small"
+TAXA = 16000
+SILENCIO_LIMIAR = 0.02
+SILENCIO_SEGUNDOS = 1.2
+MAX_SEGUNDOS = 15
 
-if vosk_disponivel:
-    modelo = vosk.Model(modelo_path)
-    reconhecedor = vosk.KaldiRecognizer(modelo, 44100)
-    print("[ESCUTA] Vosk carregado (offline)")
-else:
-    modelo = None
-    reconhecedor = None
-    print("[ESCUTA] Vosk não encontrado. Usando apenas Google Speech.")
+_modelo = None
+_lock = threading.Lock()
 
-# ========== GOOGLE SPEECH (online) ==========
-r = sr.Recognizer()
 
-def ouvir_vosk(gravacao) -> str:
-    reconhecedor.Reset()
-    dados = gravacao.tobytes()
-    reconhecedor.AcceptWaveform(dados)
-    resultado = json.loads(reconhecedor.FinalResult())
-    texto = resultado.get("text", "").strip()
-    if texto:
-        return texto.lower()
+def _carregar_modelo():
+    global _modelo
+    if _modelo is None:
+        print("[ESCUTA] Carregando Whisper...")
+        _modelo = whisper.load_model(MODELO)
+        print("[ESCUTA] Whisper pronto.")
+    return _modelo
 
-    parcial = json.loads(reconhecedor.PartialResult())
-    texto = parcial.get("partial", "").strip()
-    return texto.lower() if texto else ""
 
-def ouvir_google(gravacao) -> str:
-    buffer = io.BytesIO()
-    with wave.open(buffer, 'wb') as wf:
-        wf.setnchannels(1)
-        wf.setsampwidth(2)
-        wf.setframerate(44100)
-        wf.writeframes(gravacao.tobytes())
-    buffer.seek(0)
+def _tem_audio(audio_chunk, limiar):
+    return np.max(np.abs(audio_chunk)) > limiar
 
-    with sr.AudioFile(buffer) as source:
-        audio = r.record(source)
-
-    try:
-        texto = r.recognize_google(audio, language='pt-BR')
-        return texto.lower()
-    except:
-        return ""
 
 def ouvir() -> str:
-    print("Ouvindo...")
-    gravacao = sd.rec(int(3 * 44100), samplerate=44100, channels=1, dtype='int16')
-    sd.wait()
-
-    # Verifica volume
-    volume = np.abs(gravacao).mean()
-    if volume < 50:
-        return ""
-
-    # Tenta Vosk primeiro (offline, rápido)
-    if vosk_disponivel:
-        texto = ouvir_vosk(gravacao)
-        if texto:
-            print("Você (Vosk):", texto)
+    modelo = _carregar_modelo()
+    
+    with _lock:
+        try:
+            print("Ouvindo... (fale algo)")
+            
+            audio_gravado = []
+            silencio_inicio = None
+            falando = False
+            
+            stream = sd.InputStream(samplerate=TAXA, channels=1, dtype="float32")
+            stream.start()
+            
+            while True:
+                chunk, _ = stream.read(int(TAXA * 0.25))
+                audio_gravado.append(chunk.flatten())
+                
+                if _tem_audio(chunk, SILENCIO_LIMIAR):
+                    falando = True
+                    silencio_inicio = None
+                elif falando:
+                    if silencio_inicio is None:
+                        silencio_inicio = time.time()
+                    elif time.time() - silencio_inicio > SILENCIO_SEGUNDOS:
+                        break
+                
+                if len(audio_gravado) * 0.25 > MAX_SEGUNDOS:
+                    break
+            
+            stream.stop()
+            stream.close()
+            
+            if not falando:
+                return ""
+            
+            audio = np.concatenate(audio_gravado)
+            resultado = modelo.transcribe(audio, language="pt", fp16=False, verbose=False)
+            texto = resultado["text"].strip()
+            
+            if texto:
+                print(f"Você (Whisper): {texto}")
             return texto
-
-    # Fallback: Google Speech (online, mais flexível)
-    texto = ouvir_google(gravacao)
-    if texto:
-        print("Você (Google):", texto)
-        return texto
-
-    print("Não entendi.")
-    return ""
+            
+        except Exception as e:
+            print(f"[ESCUTA] Erro: {e}")
+            return ""

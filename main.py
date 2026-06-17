@@ -2,7 +2,7 @@ import webview
 import threading
 import os
 from core.nexus_core import processar
-from utils.escuta import ouvir
+from utils.escuta import ouvir, _carregar_modelo
 from utils.voz import falar
 
 class NexusAPI:
@@ -43,5 +43,8 @@ if __name__ == "__main__":
         background_color="#0a0a0f",
         on_top=True
     )
+
+    # Pré-carrega Whisper em background
+    threading.Thread(target=_carregar_modelo, daemon=True).start()
 
     webview.start(debug=False)
