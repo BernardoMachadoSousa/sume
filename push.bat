@@ -1,5 +1,5 @@
 @echo off 
-cd /d "C:\Users\Bernardo Jonas\sume" 
+cd /d "D:\Bernardo Jonas\sume" 
 call venv\Scripts\activate 
 git add . 
 set /p msg="Mensagem: " 
