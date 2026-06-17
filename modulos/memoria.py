@@ -1,29 +1,38 @@
-import json
+"""
+Módulo de memória do Sumé.
+Armazena dados em SQLite (robusto, sem JSON).
+"""
+
+import sqlite3
 import os
 
-ARQUIVO = "dados/memorias.json"
+DB = "dados/memoria.db"
 
-def carregar() -> dict:
-    if os.path.exists(ARQUIVO):
-        with open(ARQUIVO, "r", encoding="utf-8") as f:
-            return json.load(f)
-    return {}
-
-def salvar(dados: dict):
-    with open(ARQUIVO, "w", encoding="utf-8") as f:
-        json.dump(dados, f, indent=2, ensure_ascii=False)
+def _conectar():
+    os.makedirs("dados", exist_ok=True)
+    conn = sqlite3.connect(DB)
+    conn.execute("CREATE TABLE IF NOT EXISTS memoria (chave TEXT PRIMARY KEY, valor TEXT)")
+    conn.commit()
+    return conn
 
 def guardar(chave: str, valor: str):
-    dados = carregar()
-    dados[chave] = valor
-    salvar(dados)
+    with _conectar() as conn:
+        conn.execute("INSERT OR REPLACE INTO memoria (chave, valor) VALUES (?, ?)", (chave, valor))
 
-def lembrar(chave: str) -> str:
-    dados = carregar()
-    return dados.get(chave, None)
+def lembrar(chave: str) -> str | None:
+    with _conectar() as conn:
+        cursor = conn.execute("SELECT valor FROM memoria WHERE chave = ?", (chave,))
+        row = cursor.fetchone()
+        return row[0] if row else None
+
+def carregar() -> dict:
+    with _conectar() as conn:
+        rows = conn.execute("SELECT chave, valor FROM memoria").fetchall()
+        return dict(rows)
 
 def processar_memoria(comando: str) -> str | None:
-    # Guardar nome
+    comando = comando.lower().strip()
+
     if "meu nome é" in comando:
         nome = comando.split("é")[-1].strip()
         guardar("nome", nome)
@@ -34,7 +43,6 @@ def processar_memoria(comando: str) -> str | None:
         guardar("nome", nome)
         return f"Prazer, {nome}! Vou me lembrar disso."
 
-    # Perguntar nome
     if "meu nome" in comando or "quem sou eu" in comando:
         nome = lembrar("nome")
         if nome:
@@ -42,3 +50,19 @@ def processar_memoria(comando: str) -> str | None:
         return "Ainda não sei seu nome. Me diga: 'meu nome é...'"
 
     return None
+
+
+# Migração única: copia dados do JSON antigo para SQLite
+def _migrar_json():
+    json_path = "dados/memorias.json"
+    if os.path.exists(json_path):
+        import json
+        with open(json_path, "r", encoding="utf-8") as f:
+            dados = json.load(f)
+        for chave, valor in dados.items():
+            guardar(chave, valor)
+        os.rename(json_path, json_path + ".backup")
+        print("[Memoria] Dados migrados do JSON para SQLite.")
+
+# Executa migração ao importar
+_migrar_json()
