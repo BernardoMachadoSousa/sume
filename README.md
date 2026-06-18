@@ -216,12 +216,12 @@ git push
 - [x] Sistema de logs (comandos, intents, resultados, erros)
 - [x] Remover `except: pass` (tratamento com log)
 - [x] Catálogo/cache de programas (Menu Iniciar)
-
----
+- [x] Centralizar interpretação no Core
+- [x] Tratamento padronizado de resultados (classe Resultado)
+- [x] Testes automatizados (20 testes, abre e fecha tudo)
 
 ### 🔴 Fase 1 — Estabilidade e Organização
-- [ ] **Centralizar interpretação no Core** (remover do memoria.py)
-- [ ] **Tratamento padronizado de resultados** (classe Resultado)
+- [x] Tudo concluído! 🎉
 
 ### 🟡 Fase 2 — Preparação para Crescimento
 - [ ] Sistema de intenções (core/intents/)
@@ -247,7 +247,7 @@ git push
 - [ ] Perfis de usuário
 - [ ] Dashboard administrativo
 - [ ] Camada de serviços
-- [ ] Testes automatizados
+- [ ] Testes automatizados (expandir cobertura)
 
 ### ⚫ Fase 6 — Avançado
 - [ ] Palavra de ativação "Sumé"
