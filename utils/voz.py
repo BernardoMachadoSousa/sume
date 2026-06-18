@@ -10,13 +10,17 @@ import os
 import threading
 import edge_tts
 import pyttsx3
-
-# Configuração
-VOZ_PRINCIPAL = "pt-BR-AntonioNeural"
-VELOCIDADE = "+10%"  # velocidade da fala (opções: "-20%", "+0%", "+10%", "+20%")
+from utils.config import get as config_get
 
 # Engine offline (fallback)
 _engine_offline = None
+
+
+def _get_voz():
+    return config_get("voz") or "pt-BR-AntonioNeural"
+
+def _get_velocidade():
+    return config_get("velocidade_fala") or "+10%"
 
 
 def _get_engine_offline():
@@ -43,8 +47,8 @@ async def _gerar_audio_edge(texto, caminho_saida):
     """Gera arquivo de áudio com Edge TTS."""
     comunicador = edge_tts.Communicate(
         text=texto,
-        voice=VOZ_PRINCIPAL,
-        rate=VELOCIDADE,
+        voice=_get_voz(),
+        rate=_get_velocidade(),
     )
     await comunicador.save(caminho_saida)
 
@@ -60,19 +64,15 @@ def falar(texto):
     texto = texto.strip()
 
     try:
-        # Cria arquivo temporário
         with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as tmp:
             caminho_audio = tmp.name
 
-        # Gera áudio com Edge TTS
         loop = asyncio.new_event_loop()
         asyncio.set_event_loop(loop)
         loop.run_until_complete(_gerar_audio_edge(texto, caminho_audio))
 
-        # Toca o áudio
         _tocar_audio(caminho_audio)
 
-        # Agenda limpeza do arquivo após alguns segundos
         def _limpar():
             try:
                 import time
@@ -91,6 +91,5 @@ def falar(texto):
             pass
 
 
-# Teste rápido
 if __name__ == "__main__":
     falar("Olá, eu sou o Sumé. Minha voz está mais natural agora.")

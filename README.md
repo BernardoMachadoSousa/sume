@@ -227,7 +227,7 @@ git push
 - [ ] Sistema de intenções (core/intents/)
 - [ ] Configurações persistentes (dados/config.json)
 - [ ] Modo desenvolvedor
-- [ ] DeepSeek API como IA principal
+- [ ] DeepSeek API como IA 
 
 ### 🟢 Fase 3 — Experiência do Usuário
 - [ ] Correção inteligente de voz

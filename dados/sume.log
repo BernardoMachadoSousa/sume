@@ -319,3 +319,5 @@ Por que o Brasil não possui uma colônia na Austrália, como as Américas possu
 [2026-06-17 23:10:50] RESULTADO: SUCESSO | São 23:10. | 1ms
 [2026-06-17 23:10:50] INTENT: desligar -> '' (confianca=1.0)
 [2026-06-17 23:10:50] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-18 12:52:32] INTENT: horas -> '' (confianca=1.0)
+[2026-06-18 12:52:32] RESULTADO: SUCESSO | São 12:52. | 1ms
