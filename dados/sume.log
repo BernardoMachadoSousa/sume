@@ -321,3 +321,57 @@ Por que o Brasil não possui uma colônia na Austrália, como as Américas possu
 [2026-06-17 23:10:50] RESULTADO: SUCESSO | desligar | 1ms
 [2026-06-18 12:52:32] INTENT: horas -> '' (confianca=1.0)
 [2026-06-18 12:52:32] RESULTADO: SUCESSO | São 12:52. | 1ms
+[2026-06-18 13:07:42] INTENT: GET_TIME -> '' (confianca=1.0)
+[2026-06-18 13:07:42] RESULTADO: SUCESSO | São 13:07. | 1ms
+[2026-06-18 13:09:01] INTENT: OPEN_APP -> 'calculadora' (confianca=1.0)
+[2026-06-18 13:09:01] RESULTADO: SUCESSO | Abrindo calc. | 40ms
+[2026-06-18 13:09:02] INTENT: CLOSE_APP -> 'calculadora' (confianca=1.0)
+[2026-06-18 13:09:03] RESULTADO: SUCESSO | calc fechado. | 261ms
+[2026-06-18 13:09:03] INTENT: OPEN_APP -> 'bloco de notas' (confianca=1.0)
+[2026-06-18 13:09:03] RESULTADO: SUCESSO | Abrindo notas. | 35ms
+[2026-06-18 13:09:04] INTENT: CLOSE_APP -> 'bloco de notas' (confianca=1.0)
+[2026-06-18 13:09:04] RESULTADO: SUCESSO | notas fechado. | 293ms
+[2026-06-18 13:09:05] INTENT: OPEN_FOLDER -> 'documentos' (confianca=1.0)
+[2026-06-18 13:09:05] RESULTADO: SUCESSO | Abrindo Documents. | 97ms
+[2026-06-18 13:09:06] INTENT: OPEN_FOLDER -> 'downloads' (confianca=1.0)
+[2026-06-18 13:09:06] RESULTADO: SUCESSO | Abrindo Downloads. | 58ms
+[2026-06-18 13:09:08] INTENT: OPEN_FOLDER -> 'imagens' (confianca=1.0)
+[2026-06-18 13:09:08] RESULTADO: SUCESSO | Abrindo Pictures. | 60ms
+[2026-06-18 13:09:09] INTENT: OPEN_APP -> 'youtube' (confianca=1.0)
+[2026-06-18 13:09:09] RESULTADO: SUCESSO | Abrindo youtube. | 128ms
+[2026-06-18 13:11:02] INTENT: OPEN_APP -> 'calculadora' (confianca=1.0)
+[2026-06-18 13:11:02] RESULTADO: SUCESSO | Abrindo calc. | 18ms
+[2026-06-18 13:11:03] INTENT: CLOSE_APP -> 'calculadora' (confianca=1.0)
+[2026-06-18 13:11:04] RESULTADO: SUCESSO | calc fechado. | 149ms
+[2026-06-18 13:11:04] INTENT: OPEN_APP -> 'bloco de notas' (confianca=1.0)
+[2026-06-18 13:11:04] RESULTADO: SUCESSO | Abrindo notas. | 30ms
+[2026-06-18 13:11:05] INTENT: CLOSE_APP -> 'bloco de notas' (confianca=1.0)
+[2026-06-18 13:11:05] RESULTADO: SUCESSO | notas fechado. | 142ms
+[2026-06-18 13:11:06] INTENT: OPEN_FOLDER -> 'documentos' (confianca=1.0)
+[2026-06-18 13:11:06] RESULTADO: SUCESSO | Abrindo Documents. | 109ms
+[2026-06-18 13:11:07] INTENT: OPEN_FOLDER -> 'downloads' (confianca=1.0)
+[2026-06-18 13:11:07] RESULTADO: SUCESSO | Abrindo Downloads. | 54ms
+[2026-06-18 13:11:08] INTENT: OPEN_FOLDER -> 'imagens' (confianca=1.0)
+[2026-06-18 13:11:08] RESULTADO: SUCESSO | Abrindo Pictures. | 56ms
+[2026-06-18 13:11:09] INTENT: OPEN_APP -> 'youtube' (confianca=1.0)
+[2026-06-18 13:11:09] RESULTADO: SUCESSO | Abrindo youtube. | 113ms
+[2026-06-18 13:11:10] INTENT: OPEN_APP -> 'google' (confianca=1.0)
+[2026-06-18 13:11:10] RESULTADO: SUCESSO | Abrindo google chrome. | 46ms
+[2026-06-18 13:11:12] INTENT: OPEN_APP -> 'github' (confianca=1.0)
+[2026-06-18 13:11:12] RESULTADO: SUCESSO | Abrindo github.com. | 121ms
+[2026-06-18 13:11:13] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 26ms
+[2026-06-18 13:11:13] RESULTADO: SUCESSO | Seu nome é bernardo. | 3ms
+[2026-06-18 13:11:13] INTENT: GET_TIME -> '' (confianca=1.0)
+[2026-06-18 13:11:13] RESULTADO: SUCESSO | São 13:11. | 1ms
+[2026-06-18 13:11:13] INTENT: EXIT -> '' (confianca=1.0)
+[2026-06-18 13:11:13] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-18 13:14:33] INTENT: CHAT -> 'abre-se as calculadoras.' (confianca=1.0)
+[2026-06-18 13:14:42] RESULTADO: SUCESSO | Bem Bernardo, eu sou somente assistente virtual e não tenho a capacidade de manipular hardware como fechar ou abrir dispositivos físicos. Por favor, tente com uma pessoa ou um sistema dedicado ao controle de utilitários finais. | 9352ms
+[2026-06-18 13:15:04] INTENT: OPEN_APP -> 'calculadora.' (confianca=1.0)
+[2026-06-18 13:15:04] RESULTADO: SUCESSO | Abrindo calc. | 22ms
+[2026-06-18 13:15:15] INTENT: CHAT -> 'fichar calculadora' (confianca=1.0)
+[2026-06-18 13:15:16] RESULTADO: SUCESSO | Bem Bernardo, é importante deixarmos as coisas no lugar onde estão para evitar danificação e manutenção adequada. Além disso, você pode colocar a caligrafia em uma folha de papel se quiser mantê-la por um tempo mais longo sem alterá-la digitalmente. | 980ms
+[2026-06-18 13:15:30] INTENT: CHAT -> 'fichar calculadora' (confianca=1.0)
+[2026-06-18 13:15:31] RESULTADO: SUCESSO | Bem Bernardo, parece que há um mal entendido. Se você quer fazer anotações sobre a utilização da calculadora, fique à vontade para escrever nas páginas de papel fornecendo informações detalhadas ou reflexões pessoais em relação ao seu uso dessa tecnologia na vida cotidiana. Mas lembre-se sempre que preserva o próprio equipamento e utiliza os materiais adequadamente para evitar danos! | 1457ms
+[2026-06-18 13:15:43] INTENT: CLOSE_APP -> 'calculadora.' (confianca=1.0)
+[2026-06-18 13:15:43] RESULTADO: SUCESSO | calc fechado. | 155ms

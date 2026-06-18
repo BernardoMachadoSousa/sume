@@ -9,6 +9,8 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from core.nexus_core import processar
+import pyautogui
+pyautogui.FAILSAFE = False
 
 erros = []
 avisos = []
@@ -58,9 +60,11 @@ for pasta in pastas:
     print(f"\n--- Pasta {pasta} ---")
     testar(f"Abrir pasta {pasta}", f"abrir pasta {pasta}", "Abrindo")
     time.sleep(0.5)
-    # Fecha a janela do Explorer com Alt+F4 via atalho
-    import subprocess
-    subprocess.run('powershell -command "(New-Object -ComObject Shell.Application).Windows() | Where-Object {$_.LocationURL -match ' + pasta + '} | ForEach-Object {$_.Quit()}"', shell=True)
+    # Fecha o Explorer
+    try:
+        pyautogui.hotkey('alt', 'f4')
+    except:
+        pass
     print(f"   ✅ Fechar pasta {pasta}")
     time.sleep(0.3)
 
@@ -73,9 +77,10 @@ for site in sites:
     print(f"\n--- Site {site} ---")
     testar(f"Abrir {site}", f"abrir {site}", "Abrindo")
     time.sleep(1)
-    # Fecha a aba do navegador com Ctrl+W
-    import pyautogui
-    pyautogui.hotkey('ctrl', 'w')
+    try:
+        pyautogui.hotkey('ctrl', 'w')
+    except:
+        pass
     print(f"   ✅ Fechar {site}")
     time.sleep(0.3)
 

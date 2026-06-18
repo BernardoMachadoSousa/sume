@@ -213,21 +213,21 @@ git push
 - [x] Pré-carregamento do Whisper
 - [x] Atalhos de desenvolvimento
 - [x] Corrigir inconsistência `nome` vs `nome_usuario`
-- [x] Sistema de logs (comandos, intents, resultados, erros)
-- [x] Remover `except: pass` (tratamento com log)
-- [x] Catálogo/cache de programas (Menu Iniciar)
+- [x] Sistema de logs
+- [x] Remover `except: pass`
+- [x] Catálogo/cache de programas
 - [x] Centralizar interpretação no Core
 - [x] Tratamento padronizado de resultados (classe Resultado)
-- [x] Testes automatizados (20 testes, abre e fecha tudo)
+- [x] Testes automatizados (20 testes)
 
-### 🔴 Fase 1 — Estabilidade e Organização
-- [x] Tudo concluído! 🎉
+### 🔴 Fase 1 — Estabilidade e Organização 🎉
+- [x] Tudo concluído!
 
-### 🟡 Fase 2 — Preparação para Crescimento
-- [ ] Sistema de intenções (core/intents/)
-- [ ] Configurações persistentes (dados/config.json)
-- [ ] Modo desenvolvedor
-- [ ] DeepSeek API como IA 
+### 🟡 Fase 2 — Preparação para Crescimento 🎉
+- [x] Sistema de intenções (core/intents/)
+- [x] Configurações persistentes (dados/config.json)
+- [x] Modo desenvolvedor
+- [ ] DeepSeek API (aguardando crédito)
 
 ### 🟢 Fase 3 — Experiência do Usuário
 - [ ] Correção inteligente de voz
@@ -247,7 +247,7 @@ git push
 - [ ] Perfis de usuário
 - [ ] Dashboard administrativo
 - [ ] Camada de serviços
-- [ ] Testes automatizados (expandir cobertura)
+- [ ] Expandir cobertura de testes
 
 ### ⚫ Fase 6 — Avançado
 - [ ] Palavra de ativação "Sumé"
