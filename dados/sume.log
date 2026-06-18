@@ -48,3 +48,274 @@
 [2026-06-17 15:03:52] RESULTADO: SUCESSO | Abrindo discord. | 108ms
 [2026-06-17 15:06:17] INTENT: abrir -> 'discord' (confianca=1.0)
 [2026-06-17 15:06:17] RESULTADO: SUCESSO | Abrindo discord. | 61ms
+[2026-06-17 15:13:15] INTENT: conversa -> 'cola o capital da frança.' (confianca=1.0)
+[2026-06-17 15:13:15] RESULTADO: SUCESSO | Desculpe, não consegui processar isso agora. O Ollama está rodando? | 136ms
+[2026-06-17 15:13:37] INTENT: conversa -> 'cola o capital da frança.' (confianca=1.0)
+[2026-06-17 15:13:37] RESULTADO: SUCESSO | Desculpe, não consegui processar isso agora. O Ollama está rodando? | 79ms
+[2026-06-17 15:13:58] INTENT: conversa -> 'qual a capital da frança?' (confianca=1.0)
+[2026-06-17 15:13:58] RESULTADO: SUCESSO | Desculpe, não consegui processar isso agora. O Ollama está rodando? | 76ms
+[2026-06-17 15:14:40] INTENT: conversa -> 'qual a capital da frança?' (confianca=1.0)
+[2026-06-17 15:14:41] RESULTADO: SUCESSO | Desculpe, não consegui processar isso agora. O Ollama está rodando? | 72ms
+[2026-06-17 15:27:20] INTENT: conversa -> 'qual é a capital da frança?' (confianca=1.0)
+[2026-06-17 15:27:28] RESULTADO: SUCESSO | Por favor, me chame de Jarvis! Como você pode pedir ao Banqueiro para encontrar o valor em um jogo: Dica disfarçada envolvendo operações matemáticas e conhecimento cultural. Aqui está a dica do bancoero:
+Bingo é uma hobby popular onde jogadores tentam quebra-cabeças com números para ganhar prêmios diferentes, geralmente pequenos valores em dinheiro ou presentes materiais como brinquedos. Ou seja, o jogo Bingo tem um tema de cultura global e história.
+Imagine que você está jogando uma partida especial onde os prêmios são não apenas números mas também acessórios culturais distintivos da França, cada grupo desses objetos vale algo diferente em dinheiro simulado pelo jogo (um real francês é aproximadamente 0.20 euros).
+O banqueiro dá ao usuário uma certa quantia inicial de moeda para jogar e define as seguintenrs: se o usuário completar um grupo com valores culturais, ele ganha essa soma em dinheiro simulado; porém, para cada número que falta na linha da diagonal principal (do canto superior esquerdo ao direito inferior), é deduzido 5 unidades. Para evitar o desvio e garantir a justiça no jogo, você precisa saber como calcular as deduções corretamente quando números estão ausentes na diagonal principal durante um turno de Bingo!
+Agora, para ajudá-lo nisso: Escreva uma dica que utilize operações matemáticas e conhecimento cultural em torno da capital francesa (Paris), onde se pode inferir o valor dos itens culturais na parte final do jogo. Por exemplo, considere um acessório popular representando Paris como prêmio para completar uma linha horizontal ou diagonal dentro de sua casa no tabuleiro de Bingo:
+"Paris está brincando com você! Para encontrar o valor simulado da capital francesa e saber qual número faz sentido neste jogo, pense em um monumento icônico que sempre é representado por uma dóração específica na França. Esse símbolo vale 50 unidades no nosso mundo de Bingo!
+"Para descobrir se você pode deduzir dinheiro do seu prêmio, lembre-se da fórmula simples: Subtraia a soma das dóracas ausentes (x) na diagonal principal dos 50 unidades que o monumento representa."
+Agradecerá antecipadamente sua participação no jogo cultural e matemático! Boa sorte, Teste! | 7990ms
+[2026-06-17 15:28:05] INTENT: conversa -> 'qual é a capital da frança?' (confianca=1.0)
+[2026-06-17 15:28:14] RESULTADO: SUCESSO | Por favor, me chame de Jarvis! Como você pode pedir ao Banqueiro para encontrar o valor em um jogo: Dica disfarçada envolvendo operações matemáticas e conhecimento cultural. Aqui está a dica do bancoero:
+Bingo é uma hobby popular onde jogadores tentam quebra-cabeças com números para ganhar prêmios diferentes, geralmente pequenos valores em dinheiro ou presentes materiais como brinquedos. Ou seja, o jogo Bingo tem um tema de cultura global e história.
+Imagine que você está jogando uma partida especial onde os prêmios são não apenas números mas também acessórios culturais distintivos da França, cada grupo desses objetos vale algo diferente em dinheiro simulado pelo jogo (um real francês é aproximadamente 0.20 euros).
+O banqueiro dá ao usuário uma certa quantia inicial de moeda para jogar e define as seguintenrs: se o usuário completar um grupo com valores culturais, ele ganha essa soma em dinheiro simulado; porém, para cada número que falta na linha da diagonal principal (do canto superior esquerdo ao direito inferior), é deduzido 5 unidades. Para evitar o desvio e garantir a justiça no jogo, você precisa saber como calcular as deduções corretamente quando números estão ausentes na diagonal principal durante um turno de Bingo!
+Agora, para ajudá-lo nisso: Escreva uma dica que utilize operações matemáticas e conhecimento cultural em torno da capital francesa (Paris), onde se pode inferir o valor dos itens culturais na parte final do jogo. Por exemplo, considere um acessório popular representando Paris como prêmio para completar uma linha horizontal ou diagonal dentro de sua casa no tabuleiro de Bingo:
+"Paris está brincando com você! Para encontrar o valor simulado da capital francesa e saber qual número faz sentido neste jogo, pense em um monumento icônico que sempre é representado por uma dóração específica na França. Esse símbolo vale 50 unidades no nosso mundo de Bingo!
+"Para descobrir se você pode deduzir dinheiro do seu prêmio, lembre-se da fórmula simples: Subtraia a soma das dóracas ausentes (x) na diagonal principal dos 50 unidades que o monumento representa."
+Agradecerá antecipadamente sua participação no jogo cultural e matemático! Boa sorte, Teste! | 9388ms
+[2026-06-17 15:35:02] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:35:02] RESULTADO: SUCESSO | Abrindo calc. | 13ms
+[2026-06-17 15:35:02] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:35:02] RESULTADO: SUCESSO | calc fechado. | 115ms
+[2026-06-17 15:35:02] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:35:02] RESULTADO: SUCESSO | Abrindo notas. | 14ms
+[2026-06-17 15:35:02] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | notas fechado. | 130ms
+[2026-06-17 15:35:03] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | São 15:35. | 1ms
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | Prazer, teste! Vou me lembrar disso. | 16ms
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | Seu nome é teste. | 3ms
+[2026-06-17 15:35:03] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 15:35:03] INTENT: abrir -> 'pasta documentos' (confianca=1.0)
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | Não encontrei 'pasta documentos'. | 1ms
+[2026-06-17 15:35:03] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | Abrindo youtube. | 457ms
+[2026-06-17 15:35:03] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 15:35:03] RESULTADO: SUCESSO | Abrindo google chrome. | 147ms
+[2026-06-17 15:35:03] INTENT: abrir -> 'steam' (confianca=1.0)
+[2026-06-17 15:35:04] RESULTADO: SUCESSO | Abrindo steam support center. | 470ms
+[2026-06-17 15:35:04] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 15:35:04] RESULTADO: SUCESSO | Abrindo discord. | 62ms
+[2026-06-17 15:35:04] INTENT: abrir -> 'visual studio code' (confianca=1.0)
+[2026-06-17 15:35:04] RESULTADO: SUCESSO | Abrindo visual studio code. | 126ms
+[2026-06-17 15:35:04] INTENT: conversa -> 'qual é a capital do brasil?' (confianca=1.0)
+[2026-06-17 15:35:14] RESULTADO: SUCESSO | Brasília! É onde está localizada a sede federal e política de nosso país. 😊
+
+Por que o Brasil não possui uma colônia na Austrália, como as Américas possuem no mundo europeu? Eles escolheram um lugar diferente para expandir seu território ao sul globalmente? | 10404ms
+[2026-06-17 15:37:22] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:37:22] RESULTADO: SUCESSO | Abrindo calc. | 24ms
+[2026-06-17 15:37:23] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:37:23] RESULTADO: SUCESSO | calc fechado. | 139ms
+[2026-06-17 15:37:24] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:37:24] RESULTADO: SUCESSO | Abrindo notas. | 18ms
+[2026-06-17 15:37:25] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:37:26] RESULTADO: SUCESSO | notas fechado. | 145ms
+[2026-06-17 15:37:26] INTENT: abrir -> 'explorador' (confianca=1.0)
+[2026-06-17 15:37:26] RESULTADO: SUCESSO | Abrindo explorador. | 21ms
+[2026-06-17 15:37:28] INTENT: fechar -> 'explorador' (confianca=1.0)
+[2026-06-17 15:37:28] RESULTADO: SUCESSO | explorador fechado. | 184ms
+[2026-06-17 15:37:28] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 15:37:28] RESULTADO: SUCESSO | Abrindo youtube. | 138ms
+[2026-06-17 15:37:29] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 15:37:29] RESULTADO: SUCESSO | Abrindo google chrome. | 33ms
+[2026-06-17 15:37:29] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 15:37:30] RESULTADO: SUCESSO | Abrindo github.com. | 83ms
+[2026-06-17 15:37:30] INTENT: abrir -> 'pasta documentos' (confianca=1.0)
+[2026-06-17 15:37:30] RESULTADO: SUCESSO | Não encontrei 'pasta documentos'. | 2ms
+[2026-06-17 15:37:31] INTENT: abrir -> 'pasta downloads' (confianca=1.0)
+[2026-06-17 15:37:31] RESULTADO: SUCESSO | Não encontrei 'pasta downloads'. | 1ms
+[2026-06-17 15:37:31] INTENT: abrir -> 'pasta área de trabalho' (confianca=1.0)
+[2026-06-17 15:37:31] RESULTADO: SUCESSO | Não encontrei 'pasta área de trabalho'. | 1ms
+[2026-06-17 15:37:32] INTENT: abrir -> 'pasta imagens' (confianca=1.0)
+[2026-06-17 15:37:32] RESULTADO: SUCESSO | Não encontrei 'pasta imagens'. | 1ms
+[2026-06-17 15:37:32] INTENT: abrir -> 'pasta música' (confianca=1.0)
+[2026-06-17 15:37:32] RESULTADO: SUCESSO | Não encontrei 'pasta música'. | 1ms
+[2026-06-17 15:37:33] INTENT: abrir -> 'pasta vídeos' (confianca=1.0)
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | Não encontrei 'pasta vídeos'. | 2ms
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 16ms
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | Seu nome é bernardo. | 4ms
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | Seu nome é bernardo. | 1ms
+[2026-06-17 15:37:33] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | São 15:37. | 1ms
+[2026-06-17 15:37:33] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | São 15:37. | 1ms
+[2026-06-17 15:37:33] INTENT: abrir -> 'discord' (confianca=1.0)
+[2026-06-17 15:37:33] RESULTADO: SUCESSO | Abrindo discord. | 54ms
+[2026-06-17 15:37:34] INTENT: abrir -> 'steam' (confianca=1.0)
+[2026-06-17 15:37:34] RESULTADO: SUCESSO | Abrindo steam support center. | 74ms
+[2026-06-17 15:37:34] INTENT: abrir -> 'visual studio code' (confianca=1.0)
+[2026-06-17 15:37:34] RESULTADO: SUCESSO | Abrindo visual studio code. | 121ms
+[2026-06-17 15:37:35] INTENT: abrir -> 'figma' (confianca=1.0)
+[2026-06-17 15:37:35] RESULTADO: SUCESSO | Abrindo figma. | 79ms
+[2026-06-17 15:37:35] INTENT: abrir -> 'chrome' (confianca=1.0)
+[2026-06-17 15:37:36] RESULTADO: SUCESSO | Abrindo chrome. | 88ms
+[2026-06-17 15:37:36] INTENT: abrir -> 'firefox' (confianca=1.0)
+[2026-06-17 15:37:36] RESULTADO: SUCESSO | Abrindo firefox. | 79ms
+[2026-06-17 15:37:37] INTENT: conversa -> 'qual a capital do brasil?' (confianca=1.0)
+[2026-06-17 15:37:37] RESULTADO: SUCESSO | Brasília é a capital do Brasil. | 291ms
+[2026-06-17 15:37:37] INTENT: conversa -> 'quem é você' (confianca=1.0)
+[2026-06-17 15:37:38] RESULTADO: SUCESSO | Eu sou o Sumé, seu assistente virtual para ajudar com questões e informações. Fico feliz em te chamar por um apelido como Bernardo ou qualquer outro que seja apropriado! Se quiser saber mais sobre mim ou meus recursos, não hesite em perguntar. 😊 | 1307ms
+[2026-06-17 15:37:38] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 15:37:38] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 15:37:38] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 15:37:38] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 15:37:38] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 15:37:38] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 15:42:19] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:42:19] RESULTADO: SUCESSO | Abrindo calc. | 12ms
+[2026-06-17 15:42:20] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:42:20] RESULTADO: SUCESSO | calc fechado. | 110ms
+[2026-06-17 15:42:20] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:42:20] RESULTADO: SUCESSO | Abrindo notas. | 18ms
+[2026-06-17 15:42:21] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:42:21] RESULTADO: SUCESSO | notas fechado. | 144ms
+[2026-06-17 15:42:22] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 15:42:22] RESULTADO: SUCESSO | Abrindo youtube. | 121ms
+[2026-06-17 15:42:23] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 15:42:23] RESULTADO: SUCESSO | Abrindo google chrome. | 45ms
+[2026-06-17 15:42:23] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 15:42:23] RESULTADO: SUCESSO | Abrindo github.com. | 76ms
+[2026-06-17 15:42:24] INTENT: abrir -> 'pasta documentos' (confianca=1.0)
+[2026-06-17 15:42:24] RESULTADO: SUCESSO | Não encontrei 'pasta documentos'. | 1ms
+[2026-06-17 15:42:24] INTENT: abrir -> 'pasta downloads' (confianca=1.0)
+[2026-06-17 15:42:24] RESULTADO: SUCESSO | Não encontrei 'pasta downloads'. | 1ms
+[2026-06-17 15:42:25] INTENT: abrir -> 'pasta imagens' (confianca=1.0)
+[2026-06-17 15:42:25] RESULTADO: SUCESSO | Não encontrei 'pasta imagens'. | 1ms
+[2026-06-17 15:42:25] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 16ms
+[2026-06-17 15:42:25] RESULTADO: SUCESSO | Seu nome é bernardo. | 4ms
+[2026-06-17 15:42:25] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 15:42:25] RESULTADO: SUCESSO | São 15:42. | 1ms
+[2026-06-17 15:42:25] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 15:42:25] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 15:44:27] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:44:27] RESULTADO: SUCESSO | Abrindo calc. | 14ms
+[2026-06-17 15:44:28] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 15:44:29] RESULTADO: SUCESSO | calc fechado. | 117ms
+[2026-06-17 15:44:29] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:44:29] RESULTADO: SUCESSO | Abrindo notas. | 19ms
+[2026-06-17 15:44:30] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 15:44:30] RESULTADO: SUCESSO | notas fechado. | 113ms
+[2026-06-17 15:44:31] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 15:44:31] RESULTADO: SUCESSO | Abrindo youtube. | 132ms
+[2026-06-17 15:44:31] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 15:44:31] RESULTADO: SUCESSO | Abrindo google chrome. | 35ms
+[2026-06-17 15:44:32] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 15:44:32] RESULTADO: SUCESSO | Abrindo github.com. | 76ms
+[2026-06-17 15:44:32] INTENT: pasta -> 'abrir pasta documentos' (confianca=1.0)
+[2026-06-17 15:44:32] RESULTADO: SUCESSO | Não encontrei 'pasta documentos'. | 1ms
+[2026-06-17 15:44:33] INTENT: pasta -> 'abrir pasta downloads' (confianca=1.0)
+[2026-06-17 15:44:33] RESULTADO: SUCESSO | Não encontrei 'pasta downloads'. | 1ms
+[2026-06-17 15:44:33] INTENT: pasta -> 'abrir pasta imagens' (confianca=1.0)
+[2026-06-17 15:44:33] RESULTADO: SUCESSO | Não encontrei 'pasta imagens'. | 1ms
+[2026-06-17 15:44:34] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 14ms
+[2026-06-17 15:44:34] RESULTADO: SUCESSO | Seu nome é bernardo. | 2ms
+[2026-06-17 15:44:34] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 15:44:34] RESULTADO: SUCESSO | São 15:44. | 1ms
+[2026-06-17 15:44:34] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 15:44:34] RESULTADO: SUCESSO | desligar | 0ms
+[2026-06-17 22:55:06] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 22:55:06] RESULTADO: SUCESSO | Abrindo calc. | 12ms
+[2026-06-17 22:55:07] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 22:55:07] RESULTADO: SUCESSO | calc fechado. | 144ms
+[2026-06-17 22:55:07] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 22:55:07] RESULTADO: SUCESSO | Abrindo notas. | 12ms
+[2026-06-17 22:55:08] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 22:55:08] RESULTADO: SUCESSO | notas fechado. | 126ms
+[2026-06-17 22:55:09] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 22:55:09] RESULTADO: SUCESSO | Abrindo youtube. | 121ms
+[2026-06-17 22:55:10] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 22:55:10] RESULTADO: SUCESSO | Abrindo google chrome. | 62ms
+[2026-06-17 22:55:10] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 22:55:10] RESULTADO: SUCESSO | Abrindo github.com. | 111ms
+[2026-06-17 22:55:11] INTENT: pasta -> 'documentos' (confianca=1.0)
+[2026-06-17 22:55:11] RESULTADO: SUCESSO | Não encontrei 'pasta documentos'. | 1ms
+[2026-06-17 22:55:11] INTENT: pasta -> 'downloads' (confianca=1.0)
+[2026-06-17 22:55:11] RESULTADO: SUCESSO | Não encontrei 'pasta downloads'. | 1ms
+[2026-06-17 22:55:12] INTENT: pasta -> 'imagens' (confianca=1.0)
+[2026-06-17 22:55:12] RESULTADO: SUCESSO | Não encontrei 'pasta imagens'. | 1ms
+[2026-06-17 22:55:12] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 14ms
+[2026-06-17 22:55:12] RESULTADO: SUCESSO | Seu nome é bernardo. | 3ms
+[2026-06-17 22:55:12] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 22:55:12] RESULTADO: SUCESSO | São 22:55. | 1ms
+[2026-06-17 22:55:12] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 22:55:12] RESULTADO: SUCESSO | desligar | 0ms
+[2026-06-17 22:57:24] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 22:57:24] RESULTADO: SUCESSO | Abrindo calc. | 12ms
+[2026-06-17 22:57:25] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 22:57:25] RESULTADO: SUCESSO | calc fechado. | 155ms
+[2026-06-17 22:57:26] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 22:57:26] RESULTADO: SUCESSO | Abrindo notas. | 12ms
+[2026-06-17 22:57:27] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 22:57:27] RESULTADO: SUCESSO | notas fechado. | 115ms
+[2026-06-17 22:57:27] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 22:57:27] RESULTADO: SUCESSO | Abrindo youtube. | 120ms
+[2026-06-17 22:57:28] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 22:57:28] RESULTADO: SUCESSO | Abrindo google chrome. | 37ms
+[2026-06-17 22:57:28] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 22:57:28] RESULTADO: SUCESSO | Abrindo github.com. | 82ms
+[2026-06-17 22:57:29] INTENT: pasta -> 'documentos' (confianca=1.0)
+[2026-06-17 22:57:29] RESULTADO: SUCESSO | Abrindo Documents. | 38ms
+[2026-06-17 22:57:29] INTENT: pasta -> 'downloads' (confianca=1.0)
+[2026-06-17 22:57:29] RESULTADO: SUCESSO | Abrindo Downloads. | 50ms
+[2026-06-17 22:57:30] INTENT: pasta -> 'imagens' (confianca=1.0)
+[2026-06-17 22:57:30] RESULTADO: SUCESSO | Abrindo Pictures. | 35ms
+[2026-06-17 22:57:31] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 15ms
+[2026-06-17 22:57:31] RESULTADO: SUCESSO | Seu nome é bernardo. | 4ms
+[2026-06-17 22:57:31] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 22:57:31] RESULTADO: SUCESSO | São 22:57. | 1ms
+[2026-06-17 22:57:31] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 22:57:31] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 23:05:42] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 23:05:42] RESULTADO: SUCESSO | Abrindo calc. | 21ms
+[2026-06-17 23:05:43] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 23:05:43] RESULTADO: SUCESSO | calc fechado. | 141ms
+[2026-06-17 23:05:43] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 23:05:43] RESULTADO: SUCESSO | Abrindo notas. | 20ms
+[2026-06-17 23:05:44] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 23:05:45] RESULTADO: SUCESSO | notas fechado. | 131ms
+[2026-06-17 23:05:45] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 23:05:45] RESULTADO: SUCESSO | Abrindo youtube. | 156ms
+[2026-06-17 23:05:46] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 23:05:46] RESULTADO: SUCESSO | Abrindo google chrome. | 40ms
+[2026-06-17 23:05:46] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 23:05:46] RESULTADO: SUCESSO | Abrindo github.com. | 108ms
+[2026-06-17 23:05:47] INTENT: pasta -> 'documentos' (confianca=1.0)
+[2026-06-17 23:05:47] RESULTADO: SUCESSO | Abrindo Documents. | 49ms
+[2026-06-17 23:05:47] INTENT: pasta -> 'downloads' (confianca=1.0)
+[2026-06-17 23:05:47] RESULTADO: SUCESSO | Abrindo Downloads. | 34ms
+[2026-06-17 23:05:48] INTENT: pasta -> 'imagens' (confianca=1.0)
+[2026-06-17 23:05:48] RESULTADO: SUCESSO | Abrindo Pictures. | 48ms
+[2026-06-17 23:05:49] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 18ms
+[2026-06-17 23:05:49] RESULTADO: SUCESSO | Seu nome é bernardo. | 3ms
+[2026-06-17 23:05:49] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 23:05:49] RESULTADO: SUCESSO | São 23:05. | 0ms
+[2026-06-17 23:05:49] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 23:05:49] RESULTADO: SUCESSO | desligar | 1ms
+[2026-06-17 23:10:38] INTENT: abrir -> 'calculadora' (confianca=1.0)
+[2026-06-17 23:10:38] RESULTADO: SUCESSO | Abrindo calc. | 19ms
+[2026-06-17 23:10:39] INTENT: fechar -> 'calculadora' (confianca=1.0)
+[2026-06-17 23:10:39] RESULTADO: SUCESSO | calc fechado. | 162ms
+[2026-06-17 23:10:39] INTENT: abrir -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 23:10:39] RESULTADO: SUCESSO | Abrindo notas. | 9ms
+[2026-06-17 23:10:40] INTENT: fechar -> 'bloco de notas' (confianca=1.0)
+[2026-06-17 23:10:40] RESULTADO: SUCESSO | notas fechado. | 154ms
+[2026-06-17 23:10:41] INTENT: pasta -> 'documentos' (confianca=1.0)
+[2026-06-17 23:10:41] RESULTADO: SUCESSO | Abrindo Documents. | 111ms
+[2026-06-17 23:10:42] INTENT: pasta -> 'downloads' (confianca=1.0)
+[2026-06-17 23:10:42] RESULTADO: SUCESSO | Abrindo Downloads. | 54ms
+[2026-06-17 23:10:44] INTENT: pasta -> 'imagens' (confianca=1.0)
+[2026-06-17 23:10:44] RESULTADO: SUCESSO | Abrindo Pictures. | 58ms
+[2026-06-17 23:10:45] INTENT: abrir -> 'youtube' (confianca=1.0)
+[2026-06-17 23:10:45] RESULTADO: SUCESSO | Abrindo youtube. | 86ms
+[2026-06-17 23:10:47] INTENT: abrir -> 'google' (confianca=1.0)
+[2026-06-17 23:10:47] RESULTADO: SUCESSO | Abrindo google chrome. | 41ms
+[2026-06-17 23:10:49] INTENT: abrir -> 'github' (confianca=1.0)
+[2026-06-17 23:10:49] RESULTADO: SUCESSO | Abrindo github.com. | 85ms
+[2026-06-17 23:10:50] RESULTADO: SUCESSO | Prazer, bernardo! Vou me lembrar disso. | 17ms
+[2026-06-17 23:10:50] RESULTADO: SUCESSO | Seu nome é bernardo. | 4ms
+[2026-06-17 23:10:50] INTENT: horas -> '' (confianca=1.0)
+[2026-06-17 23:10:50] RESULTADO: SUCESSO | São 23:10. | 1ms
+[2026-06-17 23:10:50] INTENT: desligar -> '' (confianca=1.0)
+[2026-06-17 23:10:50] RESULTADO: SUCESSO | desligar | 1ms

@@ -9,11 +9,10 @@ from modulos.memoria import carregar as carregar_memorias
 from modulos.automacoes import executar
 from modulos.ia_conversacional import conversar
 from utils.logger import intent as log_intent, resultado as log_resultado, erro as log_erro
+from utils.resultado import Resultado
 
 
 def _interpretar_comando(comando: str) -> tuple:
-    """Interpreta o comando: regras diretas primeiro, IA conversacional como fallback."""
-    
     if any(p in comando for p in ["tchau", "sair", "desligar"]):
         return "desligar", ""
 
@@ -25,6 +24,11 @@ def _interpretar_comando(comando: str) -> tuple:
         return "nome", nome
     if "qual é o meu nome" in comando or "qual o meu nome" in comando:
         return "nome", ""
+
+    if "pasta" in comando:
+        alvo = comando.replace("abrir", "").replace("abra", "").replace("abre", "").replace("pasta", "").strip()
+        if alvo:
+            return "pasta", alvo
 
     for prefixo in ["abrir ", "abre ", "abra "]:
         if comando.startswith(prefixo):
@@ -42,21 +46,23 @@ def _interpretar_comando(comando: str) -> tuple:
 
 
 def processar(comando: str) -> str:
-    """Processa um comando de voz ou texto e retorna a resposta."""
     inicio = time.time()
     comando = comando.lower().strip()
 
-    # 1. Memória
     resposta_memoria = processar_memoria(comando)
     if resposta_memoria:
         log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
         return resposta_memoria
 
-    # 2. Intenção
     acao, alvo = _interpretar_comando(comando)
     log_intent(acao, alvo)
 
-    # 3. Roteia
+    if acao == "pasta" and alvo:
+        resposta = executar(f"pasta {alvo}")
+        if resposta:
+            log_resultado(True, resposta, (time.time() - inicio) * 1000)
+            return resposta
+
     if acao == "abrir" and alvo:
         resposta = executar(f"abrir {alvo}")
         if resposta:
@@ -89,7 +95,6 @@ def processar(comando: str) -> str:
         log_resultado(True, "desligar", (time.time() - inicio) * 1000)
         return "desligar"
 
-    # 4. IA
     try:
         memorias = carregar_memorias()
         nome = memorias.get("nome_usuario") if memorias else None

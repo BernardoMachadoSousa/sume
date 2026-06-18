@@ -43,27 +43,31 @@ def carregar() -> dict:
         log_erro("memoria", str(e))
         return {}
 
+def guardar_nome(nome: str) -> str:
+    guardar("nome_usuario", nome)
+    return f"Prazer, {nome}! Vou me lembrar disso."
+
+def obter_nome() -> str | None:
+    return lembrar("nome_usuario")
+
 def processar_memoria(comando: str) -> str | None:
     comando = comando.lower().strip()
 
     if "meu nome é" in comando:
         nome = comando.split("é")[-1].strip()
-        guardar("nome_usuario", nome)
-        return f"Prazer, {nome}! Vou me lembrar disso."
+        return guardar_nome(nome)
 
     if "me chamo" in comando:
         nome = comando.split("chamo")[-1].strip()
-        guardar("nome_usuario", nome)
-        return f"Prazer, {nome}! Vou me lembrar disso."
+        return guardar_nome(nome)
 
     if "meu nome" in comando or "quem sou eu" in comando:
-        nome = lembrar("nome_usuario")
+        nome = obter_nome()
         if nome:
             return f"Seu nome é {nome}."
         return "Ainda não sei seu nome. Me diga: 'meu nome é...'"
 
     return None
-
 
 def _migrar_json():
     json_path = "dados/memorias.json"

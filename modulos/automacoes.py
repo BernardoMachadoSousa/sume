@@ -109,7 +109,8 @@ def executar(comando: str) -> str | None:
         alvo = c.split(" ", 1)[1] if " " in c else ""
         return _fechar(alvo) if alvo else "O que quer fechar?"
     
-    if "pasta" in c:
+    if c.startswith("pasta "):
+        alvo = c.replace("pasta ", "").strip()
         map_pastas = {
             "documentos": "Documents", "downloads": "Downloads",
             "área de trabalho": "Desktop", "desktop": "Desktop",
@@ -118,8 +119,9 @@ def executar(comando: str) -> str | None:
             "vídeos": "Videos", "videos": "Videos",
         }
         for k, v in map_pastas.items():
-            if k in c:
+            if k in alvo:
                 os.startfile(os.path.expanduser(f"~/{v}"))
                 return f"Abrindo {v}."
+        return f"Não encontrei a pasta '{alvo}'."
     
     return None

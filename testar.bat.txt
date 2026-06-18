@@ -1,0 +1,5 @@
+@echo off
+cd /d "D:\Bernardo Jonas\sume"
+call venv\Scripts\activate
+python testes/teste_completo.py
+pause
