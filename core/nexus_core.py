@@ -6,10 +6,10 @@ Usa sistema de intenções modulares para interpretar e rotear comandos.
 import time
 from modulos.memoria import processar_memoria
 from modulos.memoria import carregar as carregar_memorias
-from modulos.automacoes import executar
 from modulos.ia_conversacional import conversar
 from utils.logger import intent as log_intent, resultado as log_resultado, erro as log_erro
-from utils.resultado import Resultado
+from core.router import rotear
+import core.handlers  # registra os handlers no router (import por efeito colateral)
 
 # Sistema de intenções
 from core.intents.open_intent import detectar as detect_open
@@ -52,43 +52,10 @@ def processar(comando: str) -> str:
     acao, alvo, confianca = _interpretar_comando(comando)
     log_intent(acao, alvo)
 
-    if acao == "OPEN_FOLDER" and alvo:
-        resposta = executar(f"pasta {alvo}")
-        if resposta:
-            log_resultado(True, resposta, (time.time() - inicio) * 1000)
-            return resposta
-
-    if acao == "OPEN_APP" and alvo:
-        resposta = executar(f"abrir {alvo}")
-        if resposta:
-            log_resultado(True, resposta, (time.time() - inicio) * 1000)
-            return resposta
-
-    elif acao == "CLOSE_APP" and alvo:
-        resposta = executar(f"fechar {alvo}")
-        if resposta:
-            log_resultado(True, resposta, (time.time() - inicio) * 1000)
-            return resposta
-
-    elif acao == "GET_TIME":
-        from datetime import datetime
-        resposta = f"São {datetime.now().strftime('%H:%M')}."
-        log_resultado(True, resposta, (time.time() - inicio) * 1000)
-        return resposta
-
-    elif acao == "MEMORY_SAVE" and alvo:
-        resposta = processar_memoria(f"meu nome é {alvo}")
-        log_resultado(True, resposta, (time.time() - inicio) * 1000)
-        return resposta
-
-    elif acao == "MEMORY_READ":
-        resposta = processar_memoria("qual é o meu nome")
-        log_resultado(True, resposta, (time.time() - inicio) * 1000)
-        return resposta
-
-    elif acao == "EXIT":
-        log_resultado(True, "desligar", (time.time() - inicio) * 1000)
-        return "desligar"
+    resultado = rotear(acao, alvo, comando)
+    if resultado is not None:
+        log_resultado(resultado.sucesso, resultado.mensagem, (time.time() - inicio) * 1000)
+        return resultado.mensagem
 
     try:
         memorias = carregar_memorias()
