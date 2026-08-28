@@ -63,8 +63,8 @@ for pasta in pastas:
     # Fecha o Explorer
     try:
         pyautogui.hotkey('alt', 'f4')
-    except:
-        pass
+    except Exception as e:
+        print(f"   ⚠️  Falha ao enviar Alt+F4: {e}")
     print(f"   ✅ Fechar pasta {pasta}")
     time.sleep(0.3)
 
@@ -79,8 +79,8 @@ for site in sites:
     time.sleep(1)
     try:
         pyautogui.hotkey('ctrl', 'w')
-    except:
-        pass
+    except Exception as e:
+        print(f"   ⚠️  Falha ao enviar Ctrl+W: {e}")
     print(f"   ✅ Fechar {site}")
     time.sleep(0.3)
 

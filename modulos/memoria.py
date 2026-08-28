@@ -78,7 +78,7 @@ def _migrar_json():
                 dados = json.load(f)
             for chave, valor in dados.items():
                 guardar(chave, valor)
-            os.rename(json_path, json_path + ".backup")
+            os.replace(json_path, json_path + ".backup")
             print("[Memoria] Dados migrados do JSON para SQLite.")
         except Exception as e:
             log_erro("memoria", f"Migração: {e}")

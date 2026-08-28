@@ -1,0 +1,36 @@
+--- a/utils/escuta.py	2026-08-28 00:53:23.109529702 +0000
++++ b/utils/escuta.py	2026-08-28 00:53:13.195706633 +0000
+@@ -81,6 +81,22 @@
+     return np.max(np.abs(audio_chunk)) > limiar
+ 
+ 
++def _cortar_silencio(audio: np.ndarray, limiar: float, taxa: int, margem_seg: float = 0.3) -> np.ndarray:
++    """
++    Remove silêncio do início/fim do áudio já gravado.
++    O Whisper tende a alucinar (repetir frases, gerar texto aleatório) quando
++    recebe áudio com muito silêncio de sobra - cortar isso reduz bastante o problema.
++    """
++    acima_limiar = np.abs(audio) > limiar
++    indices = np.nonzero(acima_limiar)[0]
++    if len(indices) == 0:
++        return audio[:0]  # nada de fala detectada
++    margem = int(margem_seg * taxa)
++    inicio = max(0, indices[0] - margem)
++    fim = min(len(audio), indices[-1] + margem)
++    return audio[inicio:fim]
++
++
+ def ouvir() -> str:
+     modelo = _carregar_modelo()
+     
+@@ -103,6 +119,10 @@
+             if not _tem_audio(audio, SILENCIO_LIMIAR):
+                 return ""
+             
++            audio = _cortar_silencio(audio, SILENCIO_LIMIAR, taxa_nativa)
++            if len(audio) < int(0.3 * taxa_nativa):  # muito curto pra ser fala de verdade
++                return ""
++            
+             audio = _resample_para_whisper(audio, taxa_nativa)
+             resultado = modelo.transcribe(audio, language="pt", fp16=False, verbose=False)
+             texto = resultado["text"].strip()

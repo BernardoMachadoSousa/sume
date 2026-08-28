@@ -25,3 +25,6 @@ def resultado(sucesso: bool, mensagem: str, tempo_ms: float = 0):
 
 def erro(modulo: str, erro_msg: str):
     _escrever(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] ERRO [{modulo}]: {erro_msg}")
+
+def info(modulo: str, mensagem: str):
+    _escrever(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] INFO [{modulo}]: {mensagem}")

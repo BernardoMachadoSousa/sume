@@ -1,0 +1,59 @@
+--- a/utils/escuta.py	2026-08-24 17:47:01.726012797 +0000
++++ b/utils/escuta.py	2026-08-24 17:46:21.810432789 +0000
+@@ -83,6 +83,18 @@
+     return np.max(np.abs(audio_chunk)) > limiar
+ 
+ 
++def _calibrar_limiar(stream, taxa_nativa) -> float:
++    """
++    Mede o ruído ambiente por 0.5s e define o limiar de fala acima dele,
++    em vez de usar um valor fixo que pode ser sensível demais em ambientes ruidosos
++    ou insensível demais com microfones fracos.
++    """
++    chunk, _ = stream.read(int(taxa_nativa * 0.5))
++    ruido_base = float(np.max(np.abs(chunk)))
++    limiar = max(SILENCIO_LIMIAR, ruido_base * 3)
++    return limiar
++
++
+ def ouvir() -> str:
+     modelo = _carregar_modelo()
+     
+@@ -90,20 +102,22 @@
+         try:
+             dispositivo, taxa_nativa = _detectar_dispositivo()
+             
++            stream = sd.InputStream(device=dispositivo, samplerate=taxa_nativa, channels=1, dtype="float32")
++            stream.start()
++            
++            limiar = _calibrar_limiar(stream, taxa_nativa)
++            
+             print("Ouvindo... (fale algo)")
+             
+             audio_gravado = []
+             silencio_inicio = None
+             falando = False
+             
+-            stream = sd.InputStream(device=dispositivo, samplerate=taxa_nativa, channels=1, dtype="float32")
+-            stream.start()
+-            
+             while True:
+                 chunk, _ = stream.read(int(taxa_nativa * 0.25))
+                 audio_gravado.append(chunk.flatten())
+                 
+-                if _tem_audio(chunk, SILENCIO_LIMIAR):
++                if _tem_audio(chunk, limiar):
+                     falando = True
+                     silencio_inicio = None
+                 elif falando:
+--- a/modulos/memoria.py	2026-08-24 17:47:01.718919645 +0000
++++ b/modulos/memoria.py	2026-08-24 17:45:41.094832416 +0000
+@@ -78,7 +78,7 @@
+                 dados = json.load(f)
+             for chave, valor in dados.items():
+                 guardar(chave, valor)
+-            os.rename(json_path, json_path + ".backup")
++            os.replace(json_path, json_path + ".backup")
+             print("[Memoria] Dados migrados do JSON para SQLite.")
+         except Exception as e:
+             log_erro("memoria", f"Migração: {e}")

@@ -11,6 +11,7 @@ import threading
 import edge_tts
 import pyttsx3
 from utils.config import get as config_get
+from utils.logger import erro as log_erro
 
 # Engine offline (fallback)
 _engine_offline = None
@@ -78,17 +79,17 @@ def falar(texto):
                 import time
                 time.sleep(5)
                 os.unlink(caminho_audio)
-            except:
-                pass
+            except OSError as e:
+                log_erro("voz", f"Falha ao remover áudio temporário: {e}")
 
         threading.Thread(target=_limpar, daemon=True).start()
 
     except Exception as e:
-        print(f"[Voz] Edge TTS falhou: {e}, usando fallback offline")
+        log_erro("voz", f"Edge TTS falhou: {e}, tentando fallback offline")
         try:
             _falar_offline(texto)
-        except:
-            pass
+        except Exception as e2:
+            log_erro("voz", f"Fallback offline (pyttsx3) também falhou: {e2}. Sem saída de voz.")
 
 
 if __name__ == "__main__":

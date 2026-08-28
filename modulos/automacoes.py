@@ -11,8 +11,8 @@ def _carregar_catalogo() -> dict:
         try:
             with open(CATALOGO_CACHE, "r", encoding="utf-8") as f:
                 return json.load(f)
-        except:
-            pass
+        except (json.JSONDecodeError, OSError) as e:
+            log_erro("automacoes", f"Cache de catálogo corrompido/ilegível: {e}")
     return _gerar_catalogo()
 
 def _gerar_catalogo() -> dict:

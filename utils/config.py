@@ -5,6 +5,7 @@ Carrega e salva preferências em dados/config.json.
 
 import json
 import os
+from utils.logger import erro as log_erro
 
 CONFIG_FILE = "dados/config.json"
 
@@ -25,8 +26,8 @@ def carregar() -> dict:
             with open(CONFIG_FILE, "r", encoding="utf-8") as f:
                 dados = json.load(f)
                 return {**PADRAO, **dados}  # mescla com padrão
-        except:
-            pass
+        except (json.JSONDecodeError, OSError) as e:
+            log_erro("config", f"config.json corrompido/ilegível, usando padrão: {e}")
     return PADRAO.copy()
 
 def salvar(config: dict):

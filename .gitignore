@@ -1,6 +1,11 @@
-venv/ 
-__pycache__/ 
-*.pyc 
-modelo_voz/ 
-dados/memorias.json 
-dados/configuracoes.json 
+venv/
+__pycache__/
+*.pyc
+modelo_voz/
+dados/memorias.json
+dados/configuracoes.json
+dados/config.json
+dados/memoria.db
+dados/sume.log
+dados/*.backup
+dados/catalogo_programas.json
