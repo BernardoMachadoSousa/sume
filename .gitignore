@@ -9,3 +9,7 @@ dados/memoria.db
 dados/sume.log
 dados/*.backup
 dados/catalogo_programas.json
+*.patch
+diag_bruto.wav
+diag_resample.wav
+diagnostico.wav
