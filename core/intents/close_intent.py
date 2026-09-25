@@ -3,5 +3,5 @@ def detectar(comando: str) -> tuple | None:
         if comando.startswith(prefixo):
             alvo = comando[len(prefixo):].strip()
             if alvo:
-                return ("CLOSE_APP", alvo, 1.0)
+                return ("CLOSE_APP", alvo, 0.85)
     return None

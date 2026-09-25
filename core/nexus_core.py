@@ -18,8 +18,9 @@ from core.intents.time_intent import detectar as detect_time
 from core.intents.memory_intent import detectar as detect_memory
 from core.intents.exit_intent import detectar as detect_exit
 from core.intents.folder_intent import detectar as detect_folder
-from core.intents.chat_intent import detectar as detect_chat
 
+# Chat não entra na lista: é o fallback explícito quando nada mais serve
+# (ver _interpretar_comando), não mais um detector que "sempre bate".
 INTENTS = [
     detect_exit,
     detect_time,
@@ -27,17 +28,68 @@ INTENTS = [
     detect_folder,
     detect_open,
     detect_close,
-    detect_chat,  # último, fallback
 ]
+
+# Abaixo desse valor, nenhum candidato é confiável o bastante: cai pro chat.
+LIMIAR_CONFIANCA_MINIMA = 0.5
+
+# Se os dois melhores candidatos são ações diferentes e a diferença de
+# confiança entre eles é menor que isso, não dá pra decidir sozinho -
+# é ambiguidade real, não escolha arbitrária de ordem de lista.
+LIMIAR_AMBIGUIDADE = 0.15
+
+# Descrição em linguagem natural de cada ação, usada só pra montar a
+# pergunta de esclarecimento quando há ambiguidade.
+_DESCRICAO_ACAO = {
+    "OPEN_APP": "abrir um aplicativo",
+    "OPEN_FOLDER": "abrir uma pasta",
+    "CLOSE_APP": "fechar um aplicativo",
+    "GET_TIME": "saber as horas",
+    "MEMORY_SAVE": "salvar seu nome",
+    "MEMORY_READ": "lembrar seu nome",
+    "EXIT": "encerrar o Sumé",
+}
 
 
 def _interpretar_comando(comando: str) -> tuple:
-    """Percorre os detectores de intenção em ordem. O último (chat) sempre retorna."""
-    for detector in INTENTS:
-        resultado = detector(comando)
-        if resultado:
-            return resultado
-    return ("CHAT", comando, 1.0)
+    """
+    Roda TODOS os detectores (não para no primeiro que bater), escolhe o de
+    maior confiança. Se o melhor for fraco demais, cai no chat. Se os dois
+    melhores forem ações diferentes e muito próximos em confiança, devolve
+    ambiguidade em vez de chutar um dos dois.
+    """
+    candidatos = [r for r in (detector(comando) for detector in INTENTS) if r]
+
+    if not candidatos:
+        return ("CHAT", comando, 1.0)
+
+    candidatos.sort(key=lambda c: c[2], reverse=True)
+    melhor = candidatos[0]
+
+    if melhor[2] < LIMIAR_CONFIANCA_MINIMA:
+        return ("CHAT", comando, 1.0)
+
+    if len(candidatos) > 1:
+        segundo = candidatos[1]
+        if melhor[0] != segundo[0] and (melhor[2] - segundo[2]) <= LIMIAR_AMBIGUIDADE:
+            return ("AMBIGUOUS", candidatos[:3], melhor[2])
+
+    return melhor
+
+
+def _pergunta_ambiguidade(candidatos: list) -> str:
+    """Monta a pergunta de esclarecimento a partir dos candidatos ambíguos."""
+    descricoes = []
+    for acao, _alvo, _conf in candidatos:
+        desc = _DESCRICAO_ACAO.get(acao, acao)
+        if desc not in descricoes:
+            descricoes.append(desc)
+    if len(descricoes) == 1:
+        # Mesma ação com alvos diferentes (ex.: dois nomes parecidos) - caso
+        # raro hoje, mas a função fica pronta pra isso.
+        return "Não entendi direito o que você quer dizer. Pode reformular?"
+    opcoes = " ou ".join(descricoes)
+    return f"Não tenho certeza se você quer {opcoes}. Pode ser mais específico?"
 
 
 def processar(comando: str) -> str:
@@ -50,7 +102,15 @@ def processar(comando: str) -> str:
         return resposta_memoria
 
     acao, alvo, confianca = _interpretar_comando(comando)
-    log_intent(acao, alvo)
+
+    if acao == "AMBIGUOUS":
+        candidatos = alvo  # lista de (acao, alvo, confianca) - ver _interpretar_comando
+        log_intent("AMBIGUOUS", str([c[0] for c in candidatos]), confianca)
+        resposta = _pergunta_ambiguidade(candidatos)
+        log_resultado(True, resposta, (time.time() - inicio) * 1000)
+        return resposta
+
+    log_intent(acao, alvo, confianca)
 
     resultado = rotear(acao, alvo, comando)
     if resultado is not None:
