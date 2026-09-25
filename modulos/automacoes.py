@@ -86,7 +86,15 @@ def _fechar(nome: str) -> str:
             return f"{chave} fechado."
     
     try:
-        r = subprocess.run('tasklist /fo csv /nh', shell=True, capture_output=True, text=True)
+        # errors="replace": o tasklist é localizado e devolve o code page do
+        # sistema. Um nome de processo com acento derrubava a decodificação.
+        r = subprocess.run(
+            'tasklist /fo csv /nh',
+            shell=True,
+            capture_output=True,
+            text=True,
+            errors="replace",
+        )
         for linha in r.stdout.splitlines():
             if n in linha.lower():
                 p = linha.split('","')[0].strip('"')

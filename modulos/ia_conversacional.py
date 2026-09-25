@@ -80,5 +80,12 @@ def limpar_historico():
 
 # Teste rápido
 if __name__ == "__main__":
+    import os
+    import sys
+
+    sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    from utils.console import configurar_console
+    configurar_console()  # a resposta do LLM costuma vir com emoji
+
     resposta = conversar("Olá! Quem é você e o que pode fazer?")
     print(f"Sumé: {resposta}")

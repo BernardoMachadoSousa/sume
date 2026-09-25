@@ -8,6 +8,9 @@ import os
 import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from utils.console import configurar_console
+configurar_console()  # antes de qualquer print, senão o emoji derruba o script
+
 from core.nexus_core import processar
 import pyautogui
 pyautogui.FAILSAFE = False

@@ -8,6 +8,9 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from utils.console import configurar_console
+configurar_console()  # antes de qualquer print, senão o emoji derruba o script
+
 from core.nexus_core import _interpretar_comando, LIMIAR_CONFIANCA_MINIMA, LIMIAR_AMBIGUIDADE
 
 erros = []

@@ -4,11 +4,17 @@ Execute em um CMD separado: python utils/dev_mode.py
 """
 
 import os
+import sys
 import time
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from utils.console import configurar_console
 
 LOG_FILE = "dados/sume.log"
 
 def iniciar():
+    configurar_console()  # as linhas do log podem ter emoji (resposta do LLM)
     print("=" * 60)
     print("MODO DESENVOLVEDOR — acompanhando logs em tempo real")
     print("Pressione Ctrl+C para sair")

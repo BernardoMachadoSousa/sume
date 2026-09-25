@@ -1,6 +1,7 @@
 import webview
 import threading
 import os
+from utils.console import configurar_console
 from core.nexus_core import processar
 from utils.escuta import ouvir, _carregar_modelo
 from utils.voz import falar
@@ -27,6 +28,8 @@ class NexusAPI:
 
 
 if __name__ == "__main__":
+    configurar_console()  # a escuta e a voz imprimem; o console do Windows é cp1252
+
     api = NexusAPI()
 
     html_path = os.path.join(os.path.dirname(__file__), "interface", "index.html")

@@ -7,6 +7,9 @@ import sys
 import os
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from utils.console import configurar_console
+configurar_console()  # antes de qualquer print, senão o emoji derruba o script
+
 from modulos.memoria import guardar, lembrar, carregar
 from modulos.automacoes import _abrir, _fechar, CATALOGO
 from utils.voz import falar
