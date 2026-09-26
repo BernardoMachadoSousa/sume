@@ -64,6 +64,49 @@ Demora alguns minutos e precisa de internet **só nessa primeira vez**.
 > O projeto usava Vosk antes, mas ele foi removido do `requirements.txt` na Etapa 1.
 > Se ainda existir uma pasta `modelo_voz` na raiz, pode apagar.
 
+### Detecção de fala (VAD)
+
+`utils/voz_vad.py` decide frame a frame de 30ms o que é fala, e a captura em
+`utils/escuta.py` usa isso para parar no silêncio em vez de gravar um tempo fixo.
+Não depende de `webrtcvad` (que não tem wheel para Python 3.14) — só de NumPy, que já
+vinha no projeto.
+
+A decisão combina quatro coisas:
+
+| Sinal | O que separa | Pega |
+|---|---|---|
+| RMS vs percentil 15 da própria gravação | ruído da fala, sem limiar fixo |Volume e zumbido |
+| Coeficiente de variação do RMS | silêncio de ruído de frase contínua | Ventilador, fonte |
+| ZCR (trocas de sinal) | grave de chiado | Zumbido de 50/60Hz |
+| Planura espectral | grave de chiado branco | Chiado de alta frequência |
+
+Depois disso há histerese: 3 frames seguidos de fala abrem a janela (90ms) e
+**10 frames de silêncio contínuo fecham** (0.30s). Esse 0.30s é o número mais
+delicado do arquivo — sem ele os vales do envelope de sílabas picavam a frase em
+seis trechos, e nenhum dos trechos contava como fala.
+
+`dados/config.json` controla a captura:
+
+| Chave | Padrão | Efeito |
+|---|---|---|
+| `tempo_escuta_max` | `15` | Teto de gravação, em segundos |
+| `silencios_para_parar` | `1.2` | Silêncio contínuo que encerra a captura |
+
+Para testar com áudio sintético, sem microfone:
+
+```bash
+python testes/teste_vad.py
+```
+
+Para testar com o seu microfone de verdade, e ver o que o VAD decidiu:
+
+```bash
+python testes/diagnostico_pipeline.py
+```
+
+Esse segundo salva `diag_bruto.wav`, `diag_cortado.wav` e `diag_resample.wav`
+para você ouvir o que foi capturado.
+
 ---
 
 ## 5. Configuração
@@ -101,7 +144,8 @@ sume/
 │   └── ia_conversacional.py # Conversa via Ollama
 ├── utils/
 │   ├── voz.py               # Síntese de fala (Edge TTS)
-│   ├── escuta.py            # Captura + transcrição (Whisper)
+│   ├── escuta.py            # Captura adaptativa + transcrição (Whisper)
+│   ├── voz_vad.py           # VAD de voz por frames de 30ms
 │   ├── config.py            # Preferências em dados/config.json
 │   └── logger.py            # Logs
 ├── interface/
@@ -195,7 +239,10 @@ git push
 - [x] Edge TTS (voz natural Antônio)
 - [x] Ollama + Phi-3 Mini (IA local)
 - [x] Whisper (reconhecimento de voz)
-- [x] Corte de silêncio por limiar de amplitude — **não é VAD real**, ver Etapa 3
+- [x] VAD por frames (30ms) em `utils/voz_vad.py` — rms relativo ao ruído da
+      própria gravação, ZCR, planura espectral e histerese
+- [x] Captura adaptativa: para no silêncio (`silencios_para_parar`) em vez de
+      gravar tempo fixo
 - [x] Push-to-talk (segurar Espaço)
 - [x] SQLite (substituiu JSON)
 - [x] Automações inteligentes (abrir/fechar programas)
@@ -208,6 +255,7 @@ git push
 - [x] Centralizar interpretação no Core
 - [x] Tratamento padronizado de resultados (classe Resultado)
 - [x] Testes automatizados (20 testes)
+- [x] 53 testes do VAD, incluindo a parada antecipada com stream falso
 
 ### 🔴 Fase 1 — Estabilidade e Organização 🎉
 - [x] Tudo concluído!
