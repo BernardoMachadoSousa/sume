@@ -340,3 +340,73 @@ body {
 .arquivo-item {
   border-left: 3px solid var(--listen-color);
 }
+
+/* ── SEARCH CONTROLS CSS ── */
+.search-controls {
+  padding: 12px;
+  background: rgba(0, 0, 0, 0.2);
+  border-bottom: 1px solid var(--glass-border);
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.controls-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.controls-group label {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.controls-group select,
+.controls-group input[type="range"] {
+  background: rgba(28, 28, 35, 0.6);
+  border: 1px solid var(--glass-border);
+  color: var(--text-main);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-family: var(--font-sans);
+}
+
+.controls-group select:hover,
+.controls-group select:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+.controls-group input[type="range"] {
+  width: 80px;
+  padding: 0;
+  height: 4px;
+  cursor: pointer;
+}
+
+#relevancia-min-display {
+  color: var(--accent-color);
+  font-weight: 600;
+  min-width: 35px;
+}
+
+.btn-export {
+  background: rgba(59, 130, 246, 0.2);
+  border: 1px solid var(--accent-color);
+  color: var(--accent-color);
+  padding: 4px 12px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-export:hover {
+  background: var(--accent-color);
+  color: white;
+}

@@ -73,6 +73,36 @@
         <!-- INDICADOR DEV CONFIDENCE -->
         <div class="confidence-badge" id="confidence"></div>
 
+        <!-- CONTROLES DE FILTRO E ORDENAÇÃO (Apenas fullscreen) -->
+        <div class="search-controls" id="search-controls" style="display:none;">
+          <div class="controls-group">
+            <label for="filter-type">Tipo:</label>
+            <select id="filter-type" onchange="aplicarFiltros()">
+              <option value="todos">Todos</option>
+              <option value="notas">Apenas Notas</option>
+              <option value="arquivos">Apenas Arquivos</option>
+            </select>
+          </div>
+          <div class="controls-group">
+            <label for="sort-by">Ordenar por:</label>
+            <select id="sort-by" onchange="aplicarFiltros()">
+              <option value="relevancia">Relevância</option>
+              <option value="nome">Nome</option>
+              <option value="data">Data</option>
+            </select>
+          </div>
+          <div class="controls-group">
+            <label for="relevancia-min">Relevância mín:</label>
+            <input type="range" id="relevancia-min" min="0" max="100" value="0" onchange="aplicarFiltros()" />
+            <span id="relevancia-min-display">0%</span>
+          </div>
+          <div class="controls-group">
+            <button class="btn-export" onclick="exportarResultados('json')">JSON</button>
+            <button class="btn-export" onclick="exportarResultados('csv')">CSV</button>
+            <button class="btn-export" onclick="exportarResultados('txt')">TXT</button>
+          </div>
+        </div>
+
         <!-- ÁREA DO CHAT -->
         <div class="history-scroll" id="history">
           <!-- Mensagens entram aqui -->

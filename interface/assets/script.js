@@ -79,6 +79,13 @@ function enviarComando(texto) {
       historico[historico.length - 1].erro = res.erro;
       historico[historico.length - 1].dados = res.dados || null;
       
+      if (res.dados) {
+        ultimosResultados = res;
+        if (isFullscreen) {
+          document.getElementById('search-controls').style.display = 'flex';
+        }
+      }
+      
       isProcessing = false;
       setCircleState('ready');
       renderizarHistorico();
@@ -91,7 +98,6 @@ function enviarComando(texto) {
       renderizarHistorico();
     });
   } else {
-    // Modo Web puro (Teste)
     setTimeout(() => {
       historico[historico.length - 1].sume = "Mock de resposta local.";
       isProcessing = false;
@@ -202,9 +208,13 @@ function toggleFullscreen() {
   if (isFullscreen) {
     app.classList.remove('widget-mode');
     app.classList.add('fullscreen-mode');
+    if (ultimosResultados && ultimosResultados.dados) {
+      document.getElementById('search-controls').style.display = 'flex';
+    }
   } else {
     app.classList.remove('fullscreen-mode');
     app.classList.add('widget-mode');
+    document.getElementById('search-controls').style.display = 'none';
   }
   atualizarDevTools();
 }
@@ -244,3 +254,102 @@ window.addEventListener('keydown', e => {
     toggleListening();
   }
 });
+
+let ultimosResultados = null;
+
+function aplicarFiltros() {
+  if (!ultimosResultados || !ultimosResultados.dados) return;
+  
+  const tipo = document.getElementById('filter-type')?.value || 'todos';
+  const ordenacao = document.getElementById('sort-by')?.value || 'relevancia';
+  const minRel = (document.getElementById('relevancia-min')?.value || 0) / 100;
+  
+  document.getElementById('relevancia-min-display').textContent = 
+    (document.getElementById('relevancia-min')?.value || 0) + '%';
+  
+  let resultados = JSON.parse(JSON.stringify(ultimosResultados.dados));
+  
+  if (tipo === 'notas') {
+    resultados = { notas: resultados.notas || [] };
+  } else if (tipo === 'arquivos') {
+    resultados = { arquivos: resultados.arquivos || [] };
+  }
+  
+  if (resultados.notas) {
+    resultados.notas = resultados.notas.filter(n => n.relevancia >= minRel);
+  }
+  if (resultados.arquivos) {
+    resultados.arquivos = resultados.arquivos.filter(a => a.relevancia >= minRel);
+  }
+  
+  if (ordenacao === 'nome') {
+    if (resultados.notas) resultados.notas.sort((a, b) => a.titulo.localeCompare(b.titulo));
+    if (resultados.arquivos) resultados.arquivos.sort((a, b) => a.nome.localeCompare(b.nome));
+  } else if (ordenacao === 'relevancia') {
+    if (resultados.notas) resultados.notas.sort((a, b) => b.relevancia - a.relevancia);
+    if (resultados.arquivos) resultados.arquivos.sort((a, b) => b.relevancia - a.relevancia);
+  }
+  
+  historico[historico.length - 1].dados = resultados;
+  renderizarHistorico();
+}
+
+function exportarResultados(formato) {
+  if (!ultimosResultados || !ultimosResultados.dados) {
+    alert('Nenhum resultado para exportar');
+    return;
+  }
+  
+  let conteudo = '';
+  const dados = ultimosResultados.dados;
+  
+  if (formato === 'json') {
+    conteudo = JSON.stringify(dados, null, 2);
+  } else if (formato === 'csv') {
+    const linhas = [];
+    linhas.push('tipo,titulo/nome,relevancia,caminho');
+    
+    if (dados.notas) {
+      dados.notas.forEach(n => {
+        linhas.push(`nota,"${n.titulo}",${n.relevancia},"${n.caminho}"`);
+      });
+    }
+    
+    if (dados.arquivos) {
+      dados.arquivos.forEach(a => {
+        linhas.push(`arquivo,"${a.nome}",${a.relevancia},"${a.caminho}"`);
+      });
+    }
+    
+    conteudo = linhas.join('\n');
+  } else if (formato === 'txt') {
+    const linhas = [];
+    linhas.push('='.repeat(70));
+    linhas.push('RESULTADOS DE BUSCA');
+    linhas.push('='.repeat(70));
+    
+    if (dados.notas) {
+      linhas.push('\nNOTAS:');
+      dados.notas.forEach(n => {
+        linhas.push(`- ${n.titulo} (${Math.round(n.relevancia * 100)}%)`);
+      });
+    }
+    
+    if (dados.arquivos) {
+      linhas.push('\nARQUIVOS:');
+      dados.arquivos.forEach(a => {
+        linhas.push(`- ${a.nome} (${Math.round(a.relevancia * 100)}%)`);
+      });
+    }
+    
+    conteudo = linhas.join('\n');
+  }
+  
+  const blob = new Blob([conteudo], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `resultados_busca_${Date.now()}.${formato === 'json' ? 'json' : formato === 'csv' ? 'csv' : 'txt'}`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
