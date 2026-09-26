@@ -201,6 +201,27 @@ python testes/teste_memoria.py
 
 ---
 
+## 4d. Interface Desktop (Etapa 4)
+
+A janela (pywebview) virou algo usável no dia a dia:
+
+- **Histórico de conversa**: cada troca fica registrada — widget mostra as últimas 3,
+  tela cheia mostra tudo com rolagem.
+- **Painel lateral de memória** (só em tela cheia): mostra o que o Sumé sabe naquele
+  momento, com a camada de cada item (sessão / curta / permanente).
+- **Estado de erro com contexto**: falha do Ollama ou erro interno aparecem destacados
+  em vermelho no histórico, em vez de sumirem.
+- **Indicador de confiança** (dev, só em tela cheia): mostra a intenção reconhecida e a
+  confiança, ex.: `[intent: GET_TIME | confiança: 0.90]`. Some quando o sistema amadurecer.
+
+Para rodar os testes da interface (sem microfone, rede **nem** Ollama):
+
+```bash
+python testes/teste_interface.py
+```
+
+---
+
 ## 5. Configuração
 
 Não é preciso criar arquivo. O `utils/config.py` gera `dados/config.json` sozinho na primeira
@@ -349,6 +370,10 @@ git push
 - [x] Tratamento padronizado de resultados (classe Resultado)
 - [x] Testes automatizados (20 testes)
 - [x] 53 testes do VAD, incluindo a parada antecipada com stream falso
+- [x] Chat híbrido local/OmniRoute (Etapa 4) — `python testes/teste_memoria.py`
+- [x] Memória em camadas + vault Markdown (Etapa 4) — `testes/teste_memoria.py`
+- [x] Interface com histórico, painel de memória, erro com contexto e confiança
+      (Etapa 4) — `testes/teste_interface.py`
 
 ### 🔴 Fase 1 — Estabilidade e Organização 🎉
 - [x] Tudo concluído!

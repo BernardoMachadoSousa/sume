@@ -39,6 +39,20 @@ LIMIAR_CONFIANCA_MINIMA = 0.5
 # é ambiguidade real, não escolha arbitrária de ordem de lista.
 LIMIAR_AMBIGUIDADE = 0.15
 
+# Última intenção reconhecida, exposta para a interface (Etapa 4).
+# Só guarda o que a interpretação já calculou; não adiciona lógica nova.
+_ultima_intencao = {"intent": None, "alvo": "", "confianca": None}
+
+
+def _marcar_intencao(acao, alvo="", confianca=None):
+    _ultima_intencao.update(intent=acao, alvo=str(alvo), confianca=confianca)
+
+
+def ultima_intencao() -> dict:
+    """Devolve cópia da intenção mais recente reconhecida pelo núcleo."""
+    return dict(_ultima_intencao)
+
+
 # Descrição em linguagem natural de cada ação, usada só pra montar a
 # pergunta de esclarecimento quando há ambiguidade.
 _DESCRICAO_ACAO = {
@@ -99,11 +113,13 @@ def processar(comando: str) -> str:
 
     resposta_memoria = processar_memoria(comando)
     if resposta_memoria:
+        _marcar_intencao("MEMORIA")
         log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
         return resposta_memoria
 
     resposta_ia = processar_ia(comando)
     if resposta_ia:
+        _marcar_intencao("IA")
         log_resultado(True, resposta_ia, (time.time() - inicio) * 1000)
         return resposta_ia
 
@@ -111,11 +127,16 @@ def processar(comando: str) -> str:
 
     if acao == "AMBIGUOUS":
         candidatos = alvo  # lista de (acao, alvo, confianca) - ver _interpretar_comando
+        _marcar_intencao("AMBIGUOUS", " ou ".join(c[0] for c in candidatos), confianca)
         log_intent("AMBIGUOUS", str([c[0] for c in candidatos]), confianca)
         resposta = _pergunta_ambiguidade(candidatos)
         log_resultado(True, resposta, (time.time() - inicio) * 1000)
         return resposta
 
+    if acao == "CHAT":
+        _marcar_intencao("CHAT", comando)
+    else:
+        _marcar_intencao(acao, alvo, confianca)
     log_intent(acao, alvo, confianca)
 
     resultado = rotear(acao, alvo, comando)

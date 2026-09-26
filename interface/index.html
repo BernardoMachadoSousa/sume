@@ -30,6 +30,8 @@
     <!-- ══════════════════ ÁREA CENTRAL ══════════════════ -->
     <div class="body">
 
+      <div class="main-col">
+
       <!-- Círculo principal -->
       <div class="circle-wrap">
         <div class="circle ready" id="circle" onclick="toggleListening()">
@@ -62,6 +64,12 @@
         <div class="status-text" id="status-text">Pronto</div>
       </div>
 
+      <!-- Confiança da última intenção (só em tela cheia, modo dev) -->
+      <div class="confidence-badge" id="confidence" title="Intenção reconhecida e confiança (desenvolvedor)"></div>
+
+      <!-- Histórico da conversa -->
+      <div class="history" id="history" aria-label="Histórico"></div>
+
       <!-- Caixa de comando -->
       <div class="input-row">
         <input
@@ -80,6 +88,14 @@
           </svg>
         </button>
       </div>
+
+      </div>
+
+      <!-- Painel lateral de memória (só em tela cheia) -->
+      <aside class="memory-panel" id="memory-panel">
+        <div class="memory-panel-title">Memória</div>
+        <div class="memory-list" id="memory-list"></div>
+      </aside>
 
     </div>
   </div>
