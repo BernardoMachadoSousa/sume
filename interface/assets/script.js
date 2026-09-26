@@ -353,3 +353,98 @@ function exportarResultados(formato) {
   a.click();
   URL.revokeObjectURL(url);
 }
+
+// ── TOUCH GESTURES PARA MOBILE ──
+
+class TouchGestureDetector {
+  constructor(element) {
+    this.element = element;
+    this.touchStartX = 0;
+    this.touchStartY = 0;
+    this.touchEndX = 0;
+    this.touchEndY = 0;
+    this.minSwipeDistance = 50;
+    
+    this.element.addEventListener('touchstart', e => this.onTouchStart(e), false);
+    this.element.addEventListener('touchend', e => this.onTouchEnd(e), false);
+  }
+  
+  onTouchStart(e) {
+    this.touchStartX = e.changedTouches[0].screenX;
+    this.touchStartY = e.changedTouches[0].screenY;
+  }
+  
+  onTouchEnd(e) {
+    this.touchEndX = e.changedTouches[0].screenX;
+    this.touchEndY = e.changedTouches[0].screenY;
+    this.handleGesture();
+  }
+  
+  handleGesture() {
+    const diffX = this.touchStartX - this.touchEndX;
+    const diffY = this.touchStartY - this.touchEndY;
+    
+    if (Math.abs(diffX) > Math.abs(diffY)) {
+      if (Math.abs(diffX) > this.minSwipeDistance) {
+        if (diffX > 0) {
+          this.onSwipeLeft();
+        } else {
+          this.onSwipeRight();
+        }
+      }
+    }
+  }
+  
+  onSwipeLeft() {
+    if (isFullscreen && document.getElementById('search-controls')) {
+      document.getElementById('search-controls').style.display = 'none';
+    }
+  }
+  
+  onSwipeRight() {
+    if (isFullscreen && document.getElementById('search-controls')) {
+      document.getElementById('search-controls').style.display = 'flex';
+    }
+  }
+}
+
+function inicializarTouchGestures() {
+  if (window.innerWidth <= 768) {
+    new TouchGestureDetector(document.getElementById('app'));
+  }
+}
+
+function otimizarParaMobile() {
+  if (window.innerWidth <= 768) {
+    document.body.style.overflow = 'hidden';
+    document.documentElement.style.overflow = 'hidden';
+    
+    if (cmdInput) {
+      cmdInput.addEventListener('focus', () => {
+        setTimeout(() => {
+          window.scrollTo(0, document.body.scrollHeight);
+        }, 200);
+      });
+    }
+    
+    const historyEl = document.getElementById('history');
+    if (historyEl) {
+      const observer = new MutationObserver(() => {
+        historyEl.scrollTop = historyEl.scrollHeight;
+      });
+      observer.observe(historyEl, { childList: true });
+    }
+  }
+}
+
+window.addEventListener('load', () => {
+  inicializarTouchGestures();
+  otimizarParaMobile();
+});
+
+window.addEventListener('resize', () => {
+  if (window.innerWidth <= 768) {
+    otimizarParaMobile();
+  }
+});
+}

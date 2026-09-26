@@ -410,3 +410,324 @@ body {
   background: var(--accent-color);
   color: white;
 }
+
+/* ── MEDIA QUERIES PARA MOBILE ── */
+
+@media (max-width: 768px) {
+  :root {
+    --widget-w: 100%;
+    --widget-h: 100vh;
+    --input-h: 48px;
+  }
+  
+  .app.widget-mode {
+    width: 100%;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+  
+  .topbar {
+    height: 44px;
+    padding: 0 12px;
+  }
+  
+  .logo-text {
+    font-size: 13px;
+  }
+  
+  .status-zone {
+    padding: 20px 0;
+  }
+  
+  .circle-wrap {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .circle {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .status-text {
+    font-size: 12px;
+    margin-top: 8px;
+  }
+  
+  .history-scroll {
+    padding: 12px 8px;
+  }
+  
+  .msg {
+    font-size: 13px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+  }
+  
+  .input-box {
+    height: var(--input-h);
+  }
+  
+  .input-box input {
+    font-size: 13px;
+    padding: 0 12px;
+  }
+  
+  .btn-send {
+    width: 44px;
+  }
+  
+  .search-controls {
+    padding: 8px;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+  
+  .controls-group {
+    font-size: 11px;
+    gap: 4px;
+  }
+  
+  .controls-group label {
+    min-width: auto;
+  }
+  
+  .controls-group select {
+    padding: 3px 6px;
+    font-size: 11px;
+  }
+  
+  .btn-export {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+  
+  .search-item {
+    padding: 8px;
+    margin-bottom: 6px;
+  }
+  
+  .search-item-title {
+    font-size: 12px;
+  }
+  
+  .search-item-excerpt {
+    font-size: 11px;
+    max-height: 2em;
+  }
+  
+  .search-item-path {
+    font-size: 10px;
+  }
+  
+  .file-icon {
+    width: 20px;
+    height: 20px;
+    font-size: 9px;
+  }
+  
+  .side-panel {
+    display: none;
+  }
+  
+  .app.fullscreen-mode .side-panel {
+    width: 100%;
+    border-right: none;
+    border-bottom: 1px solid var(--glass-border);
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  
+  .confidence-badge {
+    font-size: 9px;
+  }
+}
+
+@media (max-width: 480px) {
+  :root {
+    --input-h: 44px;
+  }
+  
+  .topbar {
+    height: 40px;
+    padding: 0 8px;
+  }
+  
+  .win-btn {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .logo-orb {
+    width: 8px;
+    height: 8px;
+  }
+  
+  .logo-text {
+    font-size: 12px;
+    letter-spacing: 1px;
+  }
+  
+  .status-zone {
+    padding: 16px 0;
+  }
+  
+  .circle-wrap {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .circle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .wave {
+    border: 1px solid rgba(16, 185, 129, 0.3);
+  }
+  
+  .mic-badge {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .status-text {
+    font-size: 11px;
+  }
+  
+  .msg {
+    font-size: 12px;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+  }
+  
+  .msg.user {
+    border-radius: 8px 2px 8px 8px;
+  }
+  
+  .msg.sume {
+    border-radius: 2px 8px 8px 8px;
+  }
+  
+  .input-box {
+    height: var(--input-h);
+    gap: 2px;
+  }
+  
+  .input-box input {
+    font-size: 12px;
+    padding: 0 10px;
+  }
+  
+  .search-controls {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .controls-group {
+    width: 100%;
+    gap: 6px;
+  }
+  
+  .controls-group select,
+  .controls-group input {
+    flex: 1;
+  }
+  
+  .btn-export {
+    flex: 1;
+    padding: 6px 8px;
+  }
+  
+  .search-item {
+    padding: 6px;
+  }
+  
+  .search-item-title {
+    font-size: 11px;
+  }
+  
+  .search-item-excerpt {
+    font-size: 10px;
+    max-height: 1.8em;
+    -webkit-line-clamp: 1;
+  }
+  
+  .file-icon {
+    width: 18px;
+    height: 18px;
+    font-size: 8px;
+  }
+  
+  .mem-item {
+    padding: 6px;
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  
+  .mem-key {
+    font-size: 10px;
+  }
+  
+  .mem-val {
+    font-size: 10px;
+  }
+}
+
+@media (max-height: 600px) {
+  .circle-wrap {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .circle {
+    width: 50px;
+    height: 50px;
+  }
+  
+  .status-text {
+    font-size: 11px;
+  }
+  
+  .history-scroll {
+    padding: 8px 4px;
+  }
+  
+  .msg {
+    font-size: 12px;
+    padding: 4px 6px;
+    margin-bottom: 2px;
+  }
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .topbar {
+    height: 36px;
+  }
+  
+  .status-zone {
+    padding: 8px 0;
+  }
+  
+  .circle-wrap {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .circle {
+    width: 45px;
+    height: 45px;
+  }
+  
+  .history-scroll {
+    max-height: 150px;
+    padding: 4px;
+  }
+  
+  .msg {
+    font-size: 11px;
+    padding: 2px 4px;
+    margin-bottom: 1px;
+  }
+}
