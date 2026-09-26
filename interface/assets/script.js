@@ -11,6 +11,11 @@ let isFullscreen  = false;
 let historico = [];
 const HISTORICO_MAXIMO = 200;
 
+// Exposto para chamar direto do Python (notificações)
+window._sume_lembrete = function(texto) {
+  registrarTroca("🔔", texto, false);
+};
+
 // ── ELEMENTOS ───────────────────────────────────
 const app        = document.getElementById('app');
 const circle     = document.getElementById('circle');

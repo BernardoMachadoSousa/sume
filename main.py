@@ -1,5 +1,6 @@
 import webview
 import threading
+import time
 import os
 from utils.console import configurar_console
 from core.nexus_core import processar, ultima_intencao as ultima_intencao_nucleo
@@ -77,5 +78,22 @@ if __name__ == "__main__":
 
     # Pré-carrega Whisper em background
     threading.Thread(target=_carregar_modelo, daemon=True).start()
+
+    # Thread de disparo de lembretes (verifica a cada 30s)
+    def _loop_lembretes():
+        from modulos.lembretes import verificar_disparos
+        while True:
+            try:
+                for texto in verificar_disparos():
+                    aviso = f"Lembrete: {texto}"
+                    falar(aviso)
+                    window.evaluate_js(
+                        f"window._sume_lembrete && window._sume_lembrete({repr(aviso)})"
+                    )
+            except Exception:
+                pass
+            time.sleep(30)
+
+    threading.Thread(target=_loop_lembretes, daemon=True).start()
 
     webview.start(debug=False)
