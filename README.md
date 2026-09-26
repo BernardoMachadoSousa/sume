@@ -109,6 +109,98 @@ para você ouvir o que foi capturado.
 
 ---
 
+## 4b. IA conversacional: local ou OmniRoute
+
+Por padrão o Sumé responde **local**, com o `phi3:mini` no Ollama. Nada sai da sua
+máquina. O OmniRoute (gateway com Claude, Gemini e Nemotron) é **opt-in**.
+
+Para ligar, defina a chave no ambiente e peça por voz:
+
+```bash
+# no terminal, antes de abrir o Sumé
+set OMNIROUTE_API_KEY=sk-sua-chave-aqui
+```
+
+```
+"usar omniroute"     # passa a responder pelo gateway
+"usar ollama"        # volta para o local
+"qual modelo"        # mostra qual está respondendo agora
+```
+
+Se o gateway estiver fora do ar ou faltar a chave, o Sumé cai no Ollama sozinho e não
+derruba a conversa.
+
+### O que vai para o modelo remoto
+
+Nada, por padrão. Quando o OmniRoute está ligado, ainda assim o prompt vai só com a
+instrução de papel: **nem o seu nome, nem a memória, nem o histórico** são enviados.
+Para liberar isso de propósito:
+
+```json
+"compartilhar_contexto_omniroute": true
+```
+
+Ligado, o modelo remoto passa a receber nome, memórias e histórico recente. Vale
+lembrar que aí o conteúdo sai da máquina.
+
+Chaves de configuração:
+
+| Chave | Padrão | Para que serve |
+| --- | --- | --- |
+| `usar_omniroute` | `false` | Liga o gateway remoto |
+| `modelo_omniroute` | `SUME-CLAUDE` | Combo usado no gateway |
+| `endpoint_omniroute` | `http://localhost:20128/v1` | Endereço do gateway |
+| `compartilhar_contexto_omniroute` | `false` | Autoriza enviar nome/memória/histórico |
+| `timeout_omniroute` | `120` | Segundos até desistir do gateway |
+
+A chave nunca fica no código: ela vem de `OMNIROUTE_API_KEY` no ambiente.
+
+---
+
+## 4c. Memória em camadas e vault
+
+### Memória: três camadas
+
+Falar com o Sumé já guarda coisa, sem precisar de comando nenhum. A camada é deduzida
+do que você disse:
+
+| Camada | Vale | Como pedir |
+| --- | --- | --- |
+| `sessao` | Some quando o Sumé fecha, não vai para o disco | `"anote que X só nesta sessão"` |
+| `curta` | Dura 7 dias e expira sozinho | `"anote que X por alguns dias"` (padrão) |
+| `permanente` | Não expira | `"anote que X sempre"` |
+
+```
+"anote que eu prefiro café sem açúcar"
+"anote que estou de folga por alguns dias"
+"anote que meu visto vence sempre"
+"o que você sabe sobre mim"
+"esqueça que eu prefiro café sem açúcar"
+```
+
+O que vence o prazo é apagado sozinho na próxima leitura — não precisa de manutenção.
+
+### Vault: notas em Markdown
+
+O vault são arquivos `.md` de verdade, em `dados/vault/`, no formato do Obsidian. Dá
+para abrir a pasta no seu editor, versionar no git ou sincronizar na mão.
+
+```
+"anote no vault que a reunião de sexta é às 10h"
+```
+
+O vault **não** vai para o prompt por padrão: ele é justamente o que costuma ser
+sensible. Ele só entra no contexto quando o chamador pede, e o chamador precisa estar
+com `compartilhar_contexto_omniroute` ligado.
+
+Para testar as duas coisas sem microfone, rede nem Ollama:
+
+```bash
+python testes/teste_memoria.py
+```
+
+---
+
 ## 5. Configuração
 
 Não é preciso criar arquivo. O `utils/config.py` gera `dados/config.json` sozinho na primeira
@@ -139,9 +231,10 @@ sume/
 │   ├── handlers.py          # Ações concretas (abrir, fechar, etc.)
 │   └── intents/             # Um arquivo por intent, com detector e confiança
 ├── modulos/
-│   ├── memoria.py           # Memória em SQLite
+│   ├── memoria.py           # Memória em camadas (sessão/curta/permanente)
+│   ├── vault.py             # Notas em Markdown (formato Obsidian)
 │   ├── automacoes.py        # Abrir/fechar apps e sites
-│   └── ia_conversacional.py # Conversa via Ollama
+│   └── ia_conversacional.py # Conversa: Ollama local ou OmniRoute
 ├── utils/
 │   ├── voz.py               # Síntese de fala (Edge TTS)
 │   ├── escuta.py            # Captura adaptativa + transcrição (Whisper)

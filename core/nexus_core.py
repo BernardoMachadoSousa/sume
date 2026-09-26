@@ -7,6 +7,7 @@ import time
 from modulos.memoria import processar_memoria
 from modulos.memoria import carregar as carregar_memorias
 from modulos.ia_conversacional import conversar
+from modulos.ia_conversacional import processar_ia
 from utils.logger import intent as log_intent, resultado as log_resultado, erro as log_erro
 from core.router import rotear
 import core.handlers  # registra os handlers no router (import por efeito colateral)
@@ -100,6 +101,11 @@ def processar(comando: str) -> str:
     if resposta_memoria:
         log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
         return resposta_memoria
+
+    resposta_ia = processar_ia(comando)
+    if resposta_ia:
+        log_resultado(True, resposta_ia, (time.time() - inicio) * 1000)
+        return resposta_ia
 
     acao, alvo, confianca = _interpretar_comando(comando)
 

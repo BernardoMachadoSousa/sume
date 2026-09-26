@@ -18,6 +18,11 @@ PADRAO = {
     "iniciar_com_windows": False,
     "tempo_escuta_max": 15,
     "silencios_para_parar": 1.2,
+    "usar_omniroute": False,  # local por padrão; o gateway remoto é opt-in
+    "modelo_omniroute": "SUME-CLAUDE",
+    "endpoint_omniroute": "http://localhost:20128/v1",
+    "compartilhar_contexto_omniroute": False,  # memória/vault só vão com isso ligado
+    "timeout_omniroute": 120,
 }
 
 def carregar() -> dict:
