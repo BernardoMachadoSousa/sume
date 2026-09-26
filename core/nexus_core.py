@@ -161,3 +161,66 @@ def processar(comando: str) -> str:
     except Exception as e:
         log_erro("nexus_core", str(e))
         return "Desculpe, ocorreu um erro ao processar seu comando."
+
+
+def processar_com_dados(comando: str) -> dict:
+    """Versão do processar que retorna dados estruturados (para busca)."""
+    inicio = time.time()
+    comando = comando.lower().strip()
+
+    resposta_memoria = processar_memoria(comando)
+    if resposta_memoria:
+        _marcar_intencao("MEMORIA")
+        log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
+        return {
+            "resposta": resposta_memoria,
+            "dados": None,
+            "acao": "MEMORIA"
+        }
+
+    acao, alvo, confianca = _interpretar_comando(comando)
+
+    if acao == "AMBIGUOUS":
+        candidatos = alvo  
+        _marcar_intencao("AMBIGUOUS", " ou ".join(c[0] for c in candidatos), confianca)
+        log_intent("AMBIGUOUS", str([c[0] for c in candidatos]), confianca)
+        resposta = _pergunta_ambiguidade(candidatos)
+        log_resultado(True, resposta, (time.time() - inicio) * 1000)
+        return {
+            "resposta": resposta,
+            "dados": None,
+            "acao": "AMBIGUOUS"
+        }
+
+    if acao == "CHAT":
+        _marcar_intencao("CHAT", comando)
+    else:
+        _marcar_intencao(acao, alvo, confianca)
+    log_intent(acao, alvo, confianca)
+
+    resultado = rotear(acao, alvo, comando)
+    if resultado is not None:
+        log_resultado(resultado.sucesso, resultado.mensagem, (time.time() - inicio) * 1000)
+        return {
+            "resposta": resultado.mensagem,
+            "dados": resultado.dados if hasattr(resultado, 'dados') else None,
+            "acao": acao
+        }
+
+    try:
+        memorias = carregar_memorias()
+        nome = memorias.get("nome_usuario") if memorias else None
+        resposta = conversar(comando, nome_usuario=nome)
+        log_resultado(True, resposta, (time.time() - inicio) * 1000)
+        return {
+            "resposta": resposta,
+            "dados": None,
+            "acao": "CHAT"
+        }
+    except Exception as e:
+        log_erro("nexus_core", str(e))
+        return {
+            "resposta": "Desculpe, ocorreu um erro ao processar seu comando.",
+            "dados": None,
+            "acao": "ERROR"
+        }

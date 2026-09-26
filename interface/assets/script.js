@@ -71,14 +71,13 @@ function enviarComando(texto) {
   isProcessing = true;
   setCircleState('processing');
 
-  // Adiciona a pergunta do usuário na UI logo de cara
   registrarTroca(texto, null, false);
   
   if (window.pywebview) {
     pywebview.api.processar_comando_info(texto).then(res => {
-      // Atualiza o histórico com a resposta do Sumé
       historico[historico.length - 1].sume = res.resposta;
       historico[historico.length - 1].erro = res.erro;
+      historico[historico.length - 1].dados = res.dados || null;
       
       isProcessing = false;
       setCircleState('ready');
@@ -102,10 +101,57 @@ function enviarComando(texto) {
   }
 }
 
-function registrarTroca(userText, sumeText, isError) {
-  historico.push({ user: userText, sume: sumeText, erro: isError });
+function registrarTroca(userText, sumeText, isError, dados = null) {
+  historico.push({ user: userText, sume: sumeText, erro: isError, dados: dados });
   if (historico.length > MAX_HIST) historico.shift();
   renderizarHistorico();
+}
+
+function renderizarResultadosBusca(dados) {
+  const container = document.createElement('div');
+  container.className = 'search-results';
+  
+  if (dados.notas) {
+    const notasDiv = document.createElement('div');
+    notasDiv.className = 'search-section';
+    notasDiv.innerHTML = '<div class="search-title">Notas encontradas:</div>';
+    
+    dados.notas.slice(0, 5).forEach(nota => {
+      const item = document.createElement('div');
+      item.className = 'search-item nota-item';
+      item.innerHTML = `
+        <div class="search-item-title">${nota.titulo}</div>
+        <div class="search-item-excerpt">${nota.trecho.substring(0, 150)}...</div>
+        <div class="search-item-path">${nota.caminho}</div>
+      `;
+      notasDiv.appendChild(item);
+    });
+    container.appendChild(notasDiv);
+  }
+  
+  if (dados.arquivos) {
+    const arquivosDiv = document.createElement('div');
+    arquivosDiv.className = 'search-section';
+    arquivosDiv.innerHTML = '<div class="search-title">Arquivos encontrados:</div>';
+    
+    dados.arquivos.slice(0, 5).forEach(arquivo => {
+      const item = document.createElement('div');
+      item.className = 'search-item arquivo-item';
+      const extensao = arquivo.nome.split('.').pop().toUpperCase();
+      item.innerHTML = `
+        <div class="search-item-header">
+          <span class="file-icon">${extensao}</span>
+          <div class="search-item-title">${arquivo.nome}</div>
+        </div>
+        <div class="search-item-excerpt">${arquivo.trecho.substring(0, 150)}...</div>
+        <div class="search-item-path">${arquivo.caminho}</div>
+      `;
+      arquivosDiv.appendChild(item);
+    });
+    container.appendChild(arquivosDiv);
+  }
+  
+  return container;
 }
 
 function renderizarHistorico() {
@@ -126,13 +172,18 @@ function renderizarHistorico() {
        // Apenas visual para lembretes
     }
 
+    // Resultados de busca (se houver)
+    if (item.dados && (item.dados.notas || item.dados.arquivos)) {
+      const resultsEl = renderizarResultadosBusca(item.dados);
+      historyEl.appendChild(resultsEl);
+    }
+
     // Sumé bubble
     if (item.sume) {
       const s = document.createElement('div');
       s.className = `msg sume ${item.erro ? 'error' : ''}`;
-      // Tratamento muito básico para markdown bold/italic (pode melhorar)
       s.innerHTML = item.sume
-        .replace(/&/g, '&amp;').replace(/</g, '&lt;') // escape tag
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;')
         .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
         .replace(/\*(.*?)\*/g, '<i>$1</i>')
         .replace(/\n/g, '<br>');

@@ -3,7 +3,7 @@ import threading
 import time
 import os
 from utils.console import configurar_console
-from core.nexus_core import processar, ultima_intencao as ultima_intencao_nucleo
+from core.nexus_core import processar, processar_com_dados, ultima_intencao as ultima_intencao_nucleo
 from modulos import memoria
 from utils.escuta import ouvir, _carregar_modelo
 from utils.voz import falar
@@ -15,14 +15,19 @@ class NexusAPI:
 
     def processar_comando_info(self, comando: str) -> dict:
         """Processa e devolve a resposta com um flag de erro, para a UI."""
-        resposta = processar(comando)
+        resultado_processado = processar_com_dados(comando)
+        resposta = resultado_processado["resposta"]
+        dados = resultado_processado["dados"]
+        
         if resposta and resposta != "desligar":
             falar(resposta)
         if resposta == "desligar":
             threading.Timer(0.5, window.destroy).start()
+        
         return {
             "resposta": resposta,
             "erro": self._mensagem_de_erro(resposta),
+            "dados": dados
         }
 
     @staticmethod
