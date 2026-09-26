@@ -55,26 +55,22 @@ pip install -r requirements.txt
 
 ---
 
-## 4. Baixar modelo de voz (Vosk)
+## 4. Modelo de voz (Whisper)
 
-* Link direto: https://alphacephei.com/vosk/models/vosk-model-small-pt-0.3.zip
-* Site com todos os modelos: https://alphacephei.com/vosk/models
+Não há download manual. Na primeira execução o `openai-whisper` baixa sozinho o modelo
+definido em `utils/escuta.py` (`MODELO = "small"`, ~460 MB) e guarda no cache do usuário.
+Demora alguns minutos e precisa de internet **só nessa primeira vez**.
 
-Passos:
-
-1. Extraia o `.zip` para dentro da pasta `sume`
-2. Renomeie a pasta extraída para `modelo_voz`
-
-Deve ficar assim: `C:\Users\seu-usuario\sume\modelo_voz\`
+> O projeto usava Vosk antes, mas ele foi removido do `requirements.txt` na Etapa 1.
+> Se ainda existir uma pasta `modelo_voz` na raiz, pode apagar.
 
 ---
 
-## 5. Criar arquivo de configuração
+## 5. Configuração
 
-```bash
-mkdir dados
-echo {"gemini_api_key": ""} > dados\configuracoes.json
-```
+Não é preciso criar arquivo. O `utils/config.py` gera `dados/config.json` sozinho na primeira
+execução, já com os valores padrão. Para mudar algo, edite esse arquivo depois da primeira
+execução ou chame `utils.config.set("chave", valor)`.
 
 ---
 
@@ -92,24 +88,32 @@ Se tudo deu certo, a janela do Sumé vai abrir.
 
 ```
 sume/
-├── main.py                 # Inicia o app
-├── requirements.txt        # Bibliotecas necessárias
+├── main.py                  # Inicia o app (pywebview)
+├── requirements.txt         # Bibliotecas necessárias
 ├── core/
-│   └── nexus_core.py       # Interpreta comandos
+│   ├── nexus_core.py        # Cérebro: interpreta e roteia comandos
+│   ├── router.py            # Registro de handlers por ação
+│   ├── handlers.py          # Ações concretas (abrir, fechar, etc.)
+│   └── intents/             # Um arquivo por intent, com detector e confiança
 ├── modulos/
-│   ├── memoria.py          # Memória
-│   ├── automacoes.py       # Abrir/fechar apps e sites
-│   └── ia_conversacional.py # IA
+│   ├── memoria.py           # Memória em SQLite
+│   ├── automacoes.py        # Abrir/fechar apps e sites
+│   └── ia_conversacional.py # Conversa via Ollama
 ├── utils/
-│   ├── voz.py              # Fala
-│   └── escuta.py           # Escuta
+│   ├── voz.py               # Síntese de fala (Edge TTS)
+│   ├── escuta.py            # Captura + transcrição (Whisper)
+│   ├── config.py            # Preferências em dados/config.json
+│   └── logger.py            # Logs
 ├── interface/
-│   ├── index.html          # Tela
+│   ├── index.html           # Tela
 │   └── assets/
-│       ├── style.css       # Visual
-│       └── script.js       # Comportamento
-└── dados/
-    └── configuracoes.json  # Chaves
+│       ├── style.css        # Visual
+│       └── script.js        # Comportamento
+├── testes/                  # Testes automatizados e diagnósticos
+└── dados/                   # Gerado em runtime (fora do Git)
+    ├── config.json          # Preferências
+    ├── memoria.db           # Memória SQLite
+    └── catalogo_programas.json
 ```
 
 ---
@@ -141,10 +145,10 @@ git push
 
 ## 🤝 Regras da equipe
 
-1. **Sempre faça **``** antes de começar**
+1. **Sempre faça `git pull` antes de começar**
 2. Avise no WhatsApp o que vai mexer
 3. Teste antes de dar `git push`
-4. Não mexa no `main.py` ou `dados/configuracoes.json` sem avisar
+4. Não mexa no `main.py` ou `dados/config.json` sem avisar
 5. Commits em português, objetivos: `"Adicionei comando de clima"`
 
 ---
@@ -156,7 +160,7 @@ git push
 | `pip não é reconhecido`     | Reinstale o Python marcando "Add to PATH" |
 | PowerShell não ativa venv   | Use o **CMD**, não o PowerShell           |
 | `ModuleNotFoundError`       | `pip install nome-do-modulo`              |
-| `modelo_voz não encontrado` | O modelo Vosk não está na pasta correta   |
+| Falha ao baixar o Whisper    | Precisa de internet só na 1ª execução; o modelo tem ~460 MB |
 
 ---
 
@@ -191,22 +195,7 @@ git push
 - [x] Edge TTS (voz natural Antônio)
 - [x] Ollama + Phi-3 Mini (IA local)
 - [x] Whisper (reconhecimento de voz)
-- [x] VAD (detecção de silêncio)
-- [x] Push-to-talk (segurar Espaço)
-- [x] SQLite (substituiu JSON)
-- [x] Automações inteligentes (abrir/fechar programas)
-- [x] Pré-carregamento do Whisper
-- [x] Atalhos de desenvolvimento
-
----
-
-## 📋 Tarefas do Sumé
-
-### ✅ Concluído
-- [x] Edge TTS (voz natural Antônio)
-- [x] Ollama + Phi-3 Mini (IA local)
-- [x] Whisper (reconhecimento de voz)
-- [x] VAD (detecção de silêncio)
+- [x] Corte de silêncio por limiar de amplitude — **não é VAD real**, ver Etapa 3
 - [x] Push-to-talk (segurar Espaço)
 - [x] SQLite (substituiu JSON)
 - [x] Automações inteligentes (abrir/fechar programas)
