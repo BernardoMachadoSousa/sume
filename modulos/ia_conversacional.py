@@ -7,6 +7,7 @@ Fallback: Ollama local (se sem internet)
 
 import os
 import requests
+import ollama
 from utils import config as cfg
 from utils.logger import erro as log_erro
 from utils.logger import info as log_info
@@ -66,9 +67,10 @@ def _responder_groq(mensagem, nome_usuario):
     """Bate no servidor Ultra-rápido da Groq Llama 3 70B."""
     chave = _credencial_groq()
     if not chave:
-        return _responder_ollama(mensagem, nome_usuario) # Fallback Pro Antigo
-        
-    extras = _contexto_extra(nome_usuario, True)
+        return _responder_ollama(mensagem, nome_usuario)
+    
+    compartilhar = cfg.get("compartilhar_conteudo_nuvem", False)
+    extras = _contexto_extra(nome_usuario, compartilhar)
     mensagens = _montar_mensagens(nome_usuario, extras)
     mensagens.append({"role": "user", "content": mensagem})
 

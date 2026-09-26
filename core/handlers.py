@@ -8,6 +8,7 @@ from core.router import registrar
 from modulos.automacoes import executar
 from modulos.memoria import processar_memoria
 from utils.resultado import Resultado
+from plugins.busca.handlers import buscar_notas_handler, buscar_arquivos_handler
 
 
 @registrar("OPEN_FOLDER")
@@ -95,3 +96,13 @@ def _reminder_cancel(alvo: str, comando: str):
 @registrar("EXIT")
 def _exit(alvo: str, comando: str):
     return Resultado(True, "desligar")
+
+
+@registrar("BUSCAR_NOTAS")
+def _buscar_notas(alvo: str, comando: str):
+    return buscar_notas_handler(alvo)
+
+
+@registrar("BUSCAR_ARQUIVOS")
+def _buscar_arquivos(alvo: str, comando: str):
+    return buscar_arquivos_handler(alvo)

@@ -78,17 +78,17 @@ checar("confiança do GET_TIME é número >= 0.5",
        str(ui))
 
 # ── 5. Classificação de erro (para o estado de erro com contexto) ──
-from modulos.ia_conversacional import FALHA_OLLAMA
+from modulos.ia_conversacional import FALHA_CONEXAO
 
-checar("FALHA_OLLAMA é marcada como erro",
-       main.NexusAPI._mensagem_de_erro(FALHA_OLLAMA))
+checar("FALHA_CONEXAO é marcada como erro",
+        main.NexusAPI._mensagem_de_erro(FALHA_CONEXAO))
 checar("'ocorreu um erro ao processar' é erro",
-       main.NexusAPI._mensagem_de_erro(
-           "Desculpe, ocorreu um erro ao processar seu comando."))
+        main.NexusAPI._mensagem_de_erro(
+            "Desculpe, ocorreu um erro ao processar seu comando."))
 checar("resposta normal não é erro",
-       not main.NexusAPI._mensagem_de_erro("São 14h32."))
+        not main.NexusAPI._mensagem_de_erro("São 14h32."))
 checar("resposta vazia não é erro",
-       not main.NexusAPI._mensagem_de_erro(""))
+        not main.NexusAPI._mensagem_de_erro(""))
 
 # ── 6. Os arquivos da interface têm os hooks esperados ──
 html = open(os.path.join(ORIGEM, "interface", "index.html"),
