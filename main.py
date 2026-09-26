@@ -27,9 +27,9 @@ class NexusAPI:
 
     @staticmethod
     def _mensagem_de_erro(resposta: str) -> bool:
-        from modulos.ia_conversacional import FALHA_OLLAMA
+        from modulos.ia_conversacional import FALHA_CONEXAO
         return bool(resposta) and (
-            resposta == FALHA_OLLAMA
+            resposta == FALHA_CONEXAO
             or "ocorreu um erro ao processar" in resposta
         )
 
@@ -95,5 +95,9 @@ if __name__ == "__main__":
             time.sleep(30)
 
     threading.Thread(target=_loop_lembretes, daemon=True).start()
+
+    # Inicia o agendador de rotinas (matinal e noturna)
+    from modulos.agendador import iniciar_agendador
+    iniciar_agendador()
 
     webview.start(debug=False)

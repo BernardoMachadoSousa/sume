@@ -1,79 +1,82 @@
 """
 Nexus Core - Cérebro do Sumé.
 Usa sistema de intenções modulares para interpretar e rotear comandos.
+Auto-descobre plugins na pasta plugins/
 """
 
 import time
+import os
+import sys
+import importlib
 from modulos.memoria import processar_memoria
 from modulos.memoria import carregar as carregar_memorias
 from modulos.ia_conversacional import conversar
-from modulos.ia_conversacional import processar_ia
 from utils.logger import intent as log_intent, resultado as log_resultado, erro as log_erro
 from core.router import rotear
-import core.handlers  # registra os handlers no router (import por efeito colateral)
 
-# Sistema de intenções
-from core.intents.open_intent import detectar as detect_open
-from core.intents.close_intent import detectar as detect_close
-from core.intents.time_intent import detectar as detect_time
-from core.intents.memory_intent import detectar as detect_memory
-from core.intents.exit_intent import detectar as detect_exit
-from core.intents.folder_intent import detectar as detect_folder
+_INTENTS_DINAMICOS = []
+_DESCRICAO_ACAO = {} 
 
-# Chat não entra na lista: é o fallback explícito quando nada mais serve
-# (ver _interpretar_comando), não mais um detector que "sempre bate".
-INTENTS = [
-    detect_exit,
-    detect_time,
-    detect_memory,
-    detect_folder,
-    detect_open,
-    detect_close,
-]
+def carregar_intencoes_automaticamente():
+    global _INTENTS_DINAMICOS, _DESCRICAO_ACAO
+    _INTENTS_DINAMICOS = []
+    
+    # 1. Carrega os do core/intents/
+    pasta_intents = os.path.join(os.path.dirname(__file__), "intents")
+    if os.path.exists(pasta_intents):
+        for arquivo in os.listdir(pasta_intents):
+            if arquivo.endswith(".py") and not arquivo.startswith("__"):
+                nome_modulo = f"core.intents.{arquivo[:-3]}"
+                try:
+                    modulo = importlib.import_module(nome_modulo)
+                    if hasattr(modulo, "detectar"):
+                        _INTENTS_DINAMICOS.append(modulo.detectar)
+                except Exception as e:
+                    log_erro("nexus_core_loader", f"Falha ao carregar intent nativo {arquivo}: {e}")
 
-# Abaixo desse valor, nenhum candidato é confiável o bastante: cai pro chat.
-LIMIAR_CONFIANCA_MINIMA = 0.5
+    # 2. Carrega da pasta plugins/
+    raiz_projeto = os.path.dirname(os.path.dirname(__file__))
+    pasta_plugins = os.path.join(raiz_projeto, "plugins")
+    if not os.path.exists(pasta_plugins):
+        os.makedirs(pasta_plugins, exist_ok=True)
+    
+    sys.path.insert(0, raiz_projeto)
+    for folder in os.listdir(pasta_plugins):
+        caminho_plugin = os.path.join(pasta_plugins, folder)
+        if os.path.isdir(caminho_plugin) and not folder.startswith("__"):
+            init_file = os.path.join(caminho_plugin, "__init__.py")
+            if os.path.exists(init_file):
+                try:
+                    modulo = importlib.import_module(f"plugins.{folder}")
+                    if hasattr(modulo, "intents"):
+                        for detector in modulo.intents:
+                            _INTENTS_DINAMICOS.append(detector)
+                    
+                    if hasattr(modulo, "DESCRICAO_ACAO"):
+                        _DESCRICAO_ACAO.update(modulo.DESCRICAO_ACAO)
+                        
+                    log_intent("PLUGIN_LOAD", f"Plugin [{folder}] carregado com sucesso.", 1.0)
+                except Exception as e:
+                    log_erro("nexus_core_loader", f"Falha ao carregar plugin {folder}: {e}")
 
-# Se os dois melhores candidatos são ações diferentes e a diferença de
-# confiança entre eles é menor que isso, não dá pra decidir sozinho -
-# é ambiguidade real, não escolha arbitrária de ordem de lista.
+# Executa na hora do boot do script
+carregar_intencoes_automaticamente()
+import core.handlers  # Registra os handlers base
+
+# Removido limite mínimo rigido de confiança para permitir que intents baseados em LLM sejam perdoados.
+LIMIAR_CONFIANCA_MINIMA = 0.4 
 LIMIAR_AMBIGUIDADE = 0.15
 
-# Última intenção reconhecida, exposta para a interface (Etapa 4).
-# Só guarda o que a interpretação já calculou; não adiciona lógica nova.
 _ultima_intencao = {"intent": None, "alvo": "", "confianca": None}
-
 
 def _marcar_intencao(acao, alvo="", confianca=None):
     _ultima_intencao.update(intent=acao, alvo=str(alvo), confianca=confianca)
 
-
 def ultima_intencao() -> dict:
-    """Devolve cópia da intenção mais recente reconhecida pelo núcleo."""
     return dict(_ultima_intencao)
 
-
-# Descrição em linguagem natural de cada ação, usada só pra montar a
-# pergunta de esclarecimento quando há ambiguidade.
-_DESCRICAO_ACAO = {
-    "OPEN_APP": "abrir um aplicativo",
-    "OPEN_FOLDER": "abrir uma pasta",
-    "CLOSE_APP": "fechar um aplicativo",
-    "GET_TIME": "saber as horas",
-    "MEMORY_SAVE": "salvar seu nome",
-    "MEMORY_READ": "lembrar seu nome",
-    "EXIT": "encerrar o Sumé",
-}
-
-
 def _interpretar_comando(comando: str) -> tuple:
-    """
-    Roda TODOS os detectores (não para no primeiro que bater), escolhe o de
-    maior confiança. Se o melhor for fraco demais, cai no chat. Se os dois
-    melhores forem ações diferentes e muito próximos em confiança, devolve
-    ambiguidade em vez de chutar um dos dois.
-    """
-    candidatos = [r for r in (detector(comando) for detector in INTENTS) if r]
+    candidatos = [r for r in (detector(comando) for detector in _INTENTS_DINAMICOS) if r]
 
     if not candidatos:
         return ("CHAT", comando, 1.0)
@@ -91,21 +94,32 @@ def _interpretar_comando(comando: str) -> tuple:
 
     return melhor
 
-
 def _pergunta_ambiguidade(candidatos: list) -> str:
-    """Monta a pergunta de esclarecimento a partir dos candidatos ambíguos."""
     descricoes = []
+    base_desc = {
+        "OPEN_APP": "abrir um aplicativo",
+        "OPEN_FOLDER": "abrir uma pasta",
+        "CLOSE_APP": "fechar um aplicativo",
+        "GET_TIME": "saber as horas",
+        "GET_DATE": "saber a data",
+        "MEMORY_SAVE": "salvar dados na memória",
+        "MEMORY_READ": "resgatar algo da memória",
+        "EXIT": "encerrar o Sumé",
+        "REMINDER_SET": "criar um lembrete",
+        "REMINDER_LIST": "ver nossos lembretes",
+        "REMINDER_CANCEL": "cancelar um lembrete"
+    }
+    base_desc.update(_DESCRICAO_ACAO) # Une as descricoes dos plugins
+    
     for acao, _alvo, _conf in candidatos:
-        desc = _DESCRICAO_ACAO.get(acao, acao)
+        desc = base_desc.get(acao, acao)
         if desc not in descricoes:
             descricoes.append(desc)
+    
     if len(descricoes) == 1:
-        # Mesma ação com alvos diferentes (ex.: dois nomes parecidos) - caso
-        # raro hoje, mas a função fica pronta pra isso.
         return "Não entendi direito o que você quer dizer. Pode reformular?"
     opcoes = " ou ".join(descricoes)
     return f"Não tenho certeza se você quer {opcoes}. Pode ser mais específico?"
-
 
 def processar(comando: str) -> str:
     inicio = time.time()
@@ -117,16 +131,10 @@ def processar(comando: str) -> str:
         log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
         return resposta_memoria
 
-    resposta_ia = processar_ia(comando)
-    if resposta_ia:
-        _marcar_intencao("IA")
-        log_resultado(True, resposta_ia, (time.time() - inicio) * 1000)
-        return resposta_ia
-
     acao, alvo, confianca = _interpretar_comando(comando)
 
     if acao == "AMBIGUOUS":
-        candidatos = alvo  # lista de (acao, alvo, confianca) - ver _interpretar_comando
+        candidatos = alvo  
         _marcar_intencao("AMBIGUOUS", " ou ".join(c[0] for c in candidatos), confianca)
         log_intent("AMBIGUOUS", str([c[0] for c in candidatos]), confianca)
         resposta = _pergunta_ambiguidade(candidatos)

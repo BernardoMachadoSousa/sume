@@ -1,322 +1,195 @@
 /* ════════════════════════════════════════════════
-   NEXUS — script.js
+   SUMÉ A.I. — SCRIPT.JS (GLASS UI)
    ════════════════════════════════════════════════ */
 
-// ── ESTADO ──────────────────────────────────────
-let isListening   = false;
-let isProcessing  = false;
-let isFullscreen  = false;
+let isListening  = false;
+let isProcessing = false;
+let isFullscreen = false;
 
-// Histórico da conversa (sessão): {usuario, sume, erro}
 let historico = [];
-const HISTORICO_MAXIMO = 200;
+const MAX_HIST = 200;
 
-// Exposto para chamar direto do Python (notificações)
-window._sume_lembrete = function(texto) {
-  registrarTroca("🔔", texto, false);
-};
-
-// ── ELEMENTOS ───────────────────────────────────
+// Elementos
 const app        = document.getElementById('app');
 const circle     = document.getElementById('circle');
 const statusText = document.getElementById('status-text');
 const cmdInput   = document.getElementById('cmd-input');
-const btnExpand  = document.getElementById('btn-expand');
 const historyEl  = document.getElementById('history');
 
-// ════════════════════════════════════════════════
-// ESTADO DO CÍRCULO
-// ════════════════════════════════════════════════
+// Lembretes do Python
+window._sume_lembrete = function(texto) {
+  registrarTroca("🔔", texto, false);
+};
 
 function setCircleState(state) {
-  // state: 'ready' | 'listening' | 'processing'
   circle.classList.remove('ready', 'listening', 'processing');
   circle.classList.add(state);
-
+  
   const labels = {
-    ready:      'Pronto',
-    listening:  'Ouvindo...',
-    processing: 'Processando...',
+    ready: 'Aguardando',
+    listening: 'Ouvindo...',
+    processing: 'Processando...'
   };
   statusText.textContent = labels[state] || '';
 }
 
-// ════════════════════════════════════════════════
-// MICROFONE / VOZ
-// ════════════════════════════════════════════════
-
-// ════════════════════════════════════════════════
-// MICROFONE / VOZ (Push-to-Talk + VAD)
-// ════════════════════════════════════════════════
-
-let pushToTalkActive = false;
-
-async function startListening() {
-  if (isProcessing || isListening) return;
-
-  isListening = true;
-  setCircleState('listening');
-
-  try {
-    let texto = '';
-    if (window.pywebview) {
-      texto = await window.pywebview.api.ouvir_comando();
-    } else {
-      await delay(2000);
-      texto = 'comando de teste';
-    }
-
-    if (texto && texto.trim()) {
-      await enviarComando(texto.trim());
-    } else {
-      showStatus('Não entendi', 1800);
-    }
-  } catch (err) {
-    console.error('Erro ao ouvir:', err);
-    showStatus('Erro ao ouvir', 1800);
-  } finally {
-    isListening = false;
-    pushToTalkActive = false;
-    setCircleState('ready');
-  }
-}
-
 function toggleListening() {
-  if (pushToTalkActive) return;
-  startListening();
-}
-
-// ════════════════════════════════════════════════
-// ENVIAR COMANDO (voz ou texto)
-// ════════════════════════════════════════════════
-
-async function enviarComando(comando) {
-  if (!comando || isProcessing) return;
-
-  isProcessing = true;
-  setCircleState('processing');
-  cmdInput.value = '';
-
-  try {
-    let resposta = '';
-    let ehErro = false;
-    if (window.pywebview) {
-      const info = await window.pywebview.api.processar_comando_info(comando);
-      resposta = (info && info.resposta) ? info.resposta : '';
-      ehErro = !!(info && info.erro);
-    } else {
-      // fallback de desenvolvimento
-      await delay(1800);
-      resposta = `Resposta para: "${comando}"`;
-    }
-
-    registrarTroca(comando, resposta, ehErro);
-    renderizarHistorico();
-    atualizarPainelMemoria();
-    atualizarConfianca();
-  } catch (err) {
-    console.error('Erro ao processar:', err);
-    registrarTroca(comando, 'Erro ao processar o comando.', true);
-    renderizarHistorico();
-    showStatus('Erro ao processar', 2000);
-  } finally {
-    isProcessing = false;
+  if (isProcessing) return;
+  isListening = !isListening;
+  
+  if (isListening) {
+    setCircleState('listening');
+    if (window.pywebview) pywebview.api.ouvir_comando().then(onMicResult);
+  } else {
     setCircleState('ready');
   }
 }
 
-// ════════════════════════════════════════════════
-// INPUT DE TEXTO
-// ════════════════════════════════════════════════
+function onMicResult(texto) {
+  if (!texto || texto === "silencio") {
+    isListening = false;
+    setCircleState('ready');
+    return;
+  }
+  isListening = false;
+  enviarComando(texto);
+}
 
 function onInputKeydown(e) {
-  if (e.key === 'Enter') {
-    const val = cmdInput.value.trim();
-    if (val) enviarComando(val);
-  }
+  if (e.key === 'Enter') onSendClick();
 }
 
 function onSendClick() {
-  const val = cmdInput.value.trim();
-  if (val) enviarComando(val);
+  const texto = cmdInput.value.trim();
+  if (!texto) return;
+  cmdInput.value = '';
+  enviarComando(texto);
 }
 
-// ════════════════════════════════════════════════
-// HISTÓRICO DA CONVERSA (Etapa 4)
-// ════════════════════════════════════════════════
+function enviarComando(texto) {
+  if (isProcessing) return;
+  isProcessing = true;
+  setCircleState('processing');
 
-function registrarTroca(usuario, sume, ehErro) {
-  historico.push({ usuario: usuario, sume: sume, erro: ehErro });
-  if (historico.length > HISTORICO_MAXIMO) {
-    historico.splice(0, historico.length - HISTORICO_MAXIMO);
+  // Adiciona a pergunta do usuário na UI logo de cara
+  registrarTroca(texto, null, false);
+  
+  if (window.pywebview) {
+    pywebview.api.processar_comando_info(texto).then(res => {
+      // Atualiza o histórico com a resposta do Sumé
+      historico[historico.length - 1].sume = res.resposta;
+      historico[historico.length - 1].erro = res.erro;
+      
+      isProcessing = false;
+      setCircleState('ready');
+      renderizarHistorico();
+      atualizarDevTools();
+    }).catch(err => {
+      historico[historico.length - 1].sume = "Erro de conexão com o núcleo.";
+      historico[historico.length - 1].erro = true;
+      isProcessing = false;
+      setCircleState('ready');
+      renderizarHistorico();
+    });
+  } else {
+    // Modo Web puro (Teste)
+    setTimeout(() => {
+      historico[historico.length - 1].sume = "Mock de resposta local.";
+      isProcessing = false;
+      setCircleState('ready');
+      renderizarHistorico();
+    }, 1500);
   }
+}
+
+function registrarTroca(userText, sumeText, isError) {
+  historico.push({ user: userText, sume: sumeText, erro: isError });
+  if (historico.length > MAX_HIST) historico.shift();
+  renderizarHistorico();
 }
 
 function renderizarHistorico() {
-  const visiveis = isFullscreen ? historico : historico.slice(-3);
-  const html = [];
-  for (const item of visiveis) {
-    html.push(
-      '<div class="msg usuario">você · ' + escapar(item.usuario) + '</div>',
-      '<div class="msg sume' + (item.erro ? ' erro' : '') + '">sumé · ' +
-        escapar(item.sume || '') + '</div>'
-    );
+  if (historico.length === 0) {
+    historyEl.innerHTML = '<div class="empty-state">Inicie a conversa...</div>';
+    return;
   }
-  historyEl.innerHTML = html.join('');
+  
+  historyEl.innerHTML = '';
+  historico.forEach(item => {
+    // User bubble
+    if (item.user && item.user !== '🔔') {
+      const u = document.createElement('div');
+      u.className = 'msg user';
+      u.textContent = item.user;
+      historyEl.appendChild(u);
+    } else if (item.user === '🔔') {
+       // Apenas visual para lembretes
+    }
+
+    // Sumé bubble
+    if (item.sume) {
+      const s = document.createElement('div');
+      s.className = `msg sume ${item.erro ? 'error' : ''}`;
+      // Tratamento muito básico para markdown bold/italic (pode melhorar)
+      s.innerHTML = item.sume
+        .replace(/&/g, '&amp;').replace(/</g, '&lt;') // escape tag
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')
+        .replace(/\n/g, '<br>');
+      historyEl.appendChild(s);
+    }
+  });
+
+  // Scroll to bottom
   historyEl.scrollTop = historyEl.scrollHeight;
 }
 
-function escapar(texto) {
-  return String(texto).replace(/[&<>"']/g, (c) => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  })[c]);
-}
-
-// ════════════════════════════════════════════════
-// PAINEL DE MEMÓRIA + INDICADOR DE CONFIANÇA (Etapa 4)
-// ════════════════════════════════════════════════
-
-async function atualizarPainelMemoria() {
-  if (!window.pywebview) return;
-  try {
-    const itens = await window.pywebview.api.ver_memorias();
-    const lista = document.getElementById('memory-list');
-    if (!itens || itens.length === 0) {
-      lista.innerHTML = '<div class="mem-vazio">Nada guardado ainda.</div>';
-      return;
-    }
-    const rotulos = { sessao: 'SESSÃO', curta: 'CURTA', permanente: 'PERM' };
-    const html = [];
-    for (const item of itens) {
-      const tag = rotulos[item.camada] || item.camada;
-      html.push(
-        '<div class="mem-item">' +
-          '<span class="mem-tag ' + String(tag).toLowerCase() + '">' + tag + '</span>' +
-          '<span class="mem-text">' +
-            '<b>' + escapar(item.chave) + '</b> = ' + escapar(item.valor) +
-          '</span></div>'
-      );
-    }
-    lista.innerHTML = html.join('');
-  } catch (err) {
-    console.error('Erro ao buscar memórias:', err);
-  }
-}
-
-async function atualizarConfianca() {
-  if (!window.pywebview) return;
-  try {
-    const info = await window.pywebview.api.ultima_intencao();
-    const el = document.getElementById('confidence');
-    if (info && info.intent) {
-      const conf = (typeof info.confianca === 'number')
-        ? ' | confiança: ' + info.confianca.toFixed(2)
-        : '';
-      el.textContent = '[intent: ' + info.intent + conf + ']';
-      el.classList.add('visivel');
-    } else {
-      el.textContent = '';
-      el.classList.remove('visivel');
-    }
-  } catch (err) {
-    console.error('Erro ao buscar intenção:', err);
-  }
-}
-
-function showStatus(texto, duracao = 1800) {
-  statusText.textContent = texto;
-  setTimeout(() => {
-    if (!isListening && !isProcessing) {
-      statusText.textContent = 'Pronto';
-    }
-  }, duracao);
-}
-
-// ════════════════════════════════════════════════
-// JANELA — EXPANDIR / MINIMIZAR / FECHAR
-// ════════════════════════════════════════════════
+// ── JANELA E MODO DEV ──
 
 function toggleFullscreen() {
   isFullscreen = !isFullscreen;
-  app.classList.toggle('widget-mode',     !isFullscreen);
-  app.classList.toggle('fullscreen-mode',  isFullscreen);
-  btnExpand.innerHTML = isFullscreen ? '&#10064;' : '&#9633;';
-  btnExpand.title     = isFullscreen ? 'Restaurar' : 'Expandir';
-  renderizarHistorico();
-  atualizarPainelMemoria();
-  atualizarConfianca();
-}
-
-function minimizarJanela() {
-  if (window.pywebview) {
-    window.pywebview.api.minimizar();
-  }
-}
-
-function fecharJanela() {
-  if (window.pywebview) {
-    window.pywebview.api.fechar();
+  if (isFullscreen) {
+    app.classList.remove('widget-mode');
+    app.classList.add('fullscreen-mode');
   } else {
-    window.close();
+    app.classList.remove('fullscreen-mode');
+    app.classList.add('widget-mode');
   }
+  atualizarDevTools();
 }
 
+function minimizarJanela() { if(window.pywebview) pywebview.api.minimizar(); }
+function fecharJanela()    { if(window.pywebview) pywebview.api.fechar(); }
 
-// ════════════════════════════════════════════════
-// TECLAS GLOBAIS + PUSH-TO-TALK
-// ════════════════════════════════════════════════
-
-document.addEventListener('keydown', (e) => {
-  // ESC: sair da tela cheia ou minimizar
-  if (e.key === 'Escape') {
-    e.preventDefault();
-    if (isFullscreen) {
-      toggleFullscreen();
-    } else {
-      minimizarJanela();
+function atualizarDevTools() {
+  if(!window.pywebview) return;
+  // Painel lateral
+  pywebview.api.ver_memorias().then(itens => {
+    const ml = document.getElementById('memory-list');
+    if(!itens || itens.length === 0) {
+      ml.innerHTML = '<div class="mem-val">Nada na memória.</div>';
+      return;
     }
-    return;
-  }
+    ml.innerHTML = itens.map(i => `
+      <div class="mem-item">
+        <div class="mem-key">${i.chave} <span class="mem-tag">${i.camada}</span></div>
+        <div class="mem-val">${i.valor}</div>
+      </div>
+    `).join('');
+  });
 
-  // Espaço: push-to-talk (segurar para falar)
-  if (e.key === ' ' && !isProcessing && !isListening && !pushToTalkActive) {
-    e.preventDefault();
-    const inputFocado = document.activeElement === cmdInput;
-    if (!inputFocado) {
-      pushToTalkActive = true;
-      startListening();
+  // Confiança
+  pywebview.api.ultima_intencao().then(uit => {
+    if(uit && uit.intent) {
+      document.getElementById('confidence').textContent = `[${uit.intent} : ${uit.confianca}]`;
     }
+  });
+}
+
+// Teclas Globais na Janela (atalhos)
+window.addEventListener('keydown', e => {
+  if (e.ctrlKey && e.code === 'Space') {
+    e.preventDefault();
+    toggleListening();
   }
 });
-
-// ════════════════════════════════════════════════
-// INICIALIZAÇÃO
-// ════════════════════════════════════════════════
-
-function init() {
-  setCircleState('ready');
-
-  if (window.pywebview) {
-    atualizarPainelMemoria();
-  }
-
-  // Pulso de boas-vindas — pisca uma vez ao abrir
-  setTimeout(() => {
-    circle.style.boxShadow = '0 0 60px rgba(139, 92, 246, 0.7)';
-    setTimeout(() => {
-      circle.style.boxShadow = '';
-    }, 600);
-  }, 400);
-}
-
-// Aguarda PyWebView pronto (se existir) ou inicia direto
-if (window.pywebview) {
-  window.addEventListener('pywebviewready', init);
-} else {
-  document.addEventListener('DOMContentLoaded', init);
-}
-
-// ── UTILITÁRIO ──────────────────────────────────
-function delay(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}

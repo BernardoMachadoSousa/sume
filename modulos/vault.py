@@ -55,6 +55,23 @@ def salvar(titulo: str, corpo: str, tags=None, links=None) -> str:
         return ""
 
 
+def append_to_note(titulo: str, texto: str) -> str:
+    """Append texto to an existing note, creating it if necessary.
+    Returns the path of the note.
+    """
+    try:
+        existente = ler(titulo) or ""
+        # Avoid adding extra newline if existing is empty
+        if existente:
+            combined = existente + "\n" + texto
+        else:
+            combined = texto
+        return salvar(titulo, combined)
+    except Exception as e:
+        log_erro("vault", str(e))
+        return ""
+
+
 def ler(titulo: str) -> str | None:
     """Lê o corpo de uma nota, sem o frontmatter."""
     try:

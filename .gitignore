@@ -13,3 +13,6 @@ dados/catalogo_programas.json
 diag_bruto.wav
 diag_resample.wav
 diagnostico.wav
+dados/vault/
+*.log
+interface/backup/

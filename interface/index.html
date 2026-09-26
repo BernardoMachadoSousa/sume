@@ -3,99 +3,102 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NEXUS</title>
+  <title>Sumé AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="assets/style.css" />
 </head>
 <body>
 
-  <div id="app" class="app widget-mode">
+  <div id="app" class="app widget-mode flex-col">
 
     <!-- ══════════════════ BARRA SUPERIOR ══════════════════ -->
-    <div class="topbar" id="topbar">
+    <div class="topbar drag-region" id="topbar">
       <div class="logo">
-        <!-- ✏️ Edite o nome da logo aqui -->
-        <span class="logo-dot"></span>
-        <span class="logo-text">NEXUS</span>
+        <div class="logo-orb"></div>
+        <span class="logo-text">SUMÉ</span>
       </div>
       <div class="win-controls">
-        <button class="win-btn" id="btn-expand"   title="Expandir"  onclick="toggleFullscreen()">&#9633;</button>
-        <button class="win-btn" id="btn-minimize" title="Minimizar" onclick="minimizarJanela()">&#8722;</button>
-        <button class="win-btn close"              title="Fechar"    onclick="fecharJanela()">&#10005;</button>
+        <button class="win-btn win-expand" id="btn-expand" title="Expandir" onclick="toggleFullscreen()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+        </button>
+        <button class="win-btn win-minimize" id="btn-minimize" title="Minimizar" onclick="minimizarJanela()">
+          <svg width="12" height="2" viewBox="0 0 12 2" fill="currentColor"><rect width="12" height="2" rx="1"/></svg>
+        </button>
+        <button class="win-btn win-close" id="btn-close" title="Fechar" onclick="fecharJanela()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
       </div>
     </div>
 
     <!-- ══════════════════ ÁREA CENTRAL ══════════════════ -->
-    <div class="body">
-
-      <div class="main-col">
-
-      <!-- Círculo principal -->
-      <div class="circle-wrap">
-        <div class="circle ready" id="circle" onclick="toggleListening()">
-
-          <!-- ✏️ Substitua esta div pela sua logo -->
-          <div class="logo-center" id="logo-center">
-            <!-- Exemplo: <img src="logo.svg" alt="Logo" /> -->
-            <svg width="54" height="54" viewBox="0 0 54 54" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <circle cx="27" cy="27" r="20" stroke="#8B5CF6" stroke-width="2" stroke-opacity="0.8"/>
-              <circle cx="27" cy="27" r="10" fill="#8B5CF6" fill-opacity="0.25"/>
-              <path d="M27 17 L32 24 L27 21 L22 24 Z" fill="#A78BFA"/>
-              <path d="M27 37 L32 30 L27 33 L22 30 Z" fill="#7C3AED"/>
-              <line x1="27" y1="17" x2="27" y2="37" stroke="#8B5CF6" stroke-width="1.5" stroke-opacity="0.5"/>
-            </svg>
+    <div class="body-layout">
+      
+      <!-- MENU ESQUERDO (Apenas Fullscreen) -->
+      <aside class="side-panel" id="side-panel">
+        <div class="panel-section">
+          <h3 class="panel-title">MEMÓRIA ATIVA</h3>
+          <div class="memory-list" id="memory-list">
+            <!-- Povoado por JS -->
           </div>
+        </div>
+      </aside>
 
-          <!-- Ícone mic — fica discreto na parte inferior do círculo -->
-          <div class="mic-area" id="mic-area">
-            <svg class="mic-icon" id="mic-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-              <rect x="9" y="2" width="6" height="11" rx="3"/>
-              <path d="M5 10a7 7 0 0 0 14 0"/>
-              <line x1="12" y1="19" x2="12" y2="22"/>
-              <line x1="9"  y1="22" x2="15" y2="22"/>
-            </svg>
+      <!-- ÁREA DE CHAT E STATUS -->
+      <main class="main-workspace flex-col">
+          
+        <!-- ÁREA DO CÍRCULO (Visualizador de Voz) -->
+        <div class="status-zone">
+          <div class="circle-wrap" onclick="toggleListening()">
+            <div class="circle ready" id="circle">
+              <!-- Ondas animadas aparecem aqui via CSS -->
+              <div class="wave wave1"></div>
+              <div class="wave wave2"></div>
+              <div class="wave wave3"></div>
+              <div class="core-orb"></div>
+            </div>
+            <div class="mic-badge" id="mic-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                <line x1="12" y1="19" x2="12" y2="23"></line>
+                <line x1="8" y1="23" x2="16" y2="23"></line>
+              </svg>
+            </div>
           </div>
-
+          <div class="status-text" id="status-text">Aguardando</div>
         </div>
 
-        <!-- Texto de status -->
-        <div class="status-text" id="status-text">Pronto</div>
-      </div>
+        <!-- INDICADOR DEV CONFIDENCE -->
+        <div class="confidence-badge" id="confidence"></div>
 
-      <!-- Confiança da última intenção (só em tela cheia, modo dev) -->
-      <div class="confidence-badge" id="confidence" title="Intenção reconhecida e confiança (desenvolvedor)"></div>
+        <!-- ÁREA DO CHAT -->
+        <div class="history-scroll" id="history">
+          <!-- Mensagens entram aqui -->
+          <div class="empty-state">Inicie a conversa...</div>
+        </div>
 
-      <!-- Histórico da conversa -->
-      <div class="history" id="history" aria-label="Histórico"></div>
+        <!-- INPUT E CONTROLES -->
+        <div class="input-zone">
+          <div class="input-box">
+            <input 
+              type="text" 
+              id="cmd-input" 
+              placeholder="Digite comando ou pergunte..." 
+              autocomplete="off" 
+              onkeydown="onInputKeydown(event)"
+            />
+            <button class="btn-send" id="send-btn" onclick="onSendClick()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
 
-      <!-- Caixa de comando -->
-      <div class="input-row">
-        <input
-          class="cmd-input"
-          id="cmd-input"
-          type="text"
-          placeholder="Comando..."
-          autocomplete="off"
-          onkeydown="onInputKeydown(event)"
-        />
-        <button class="send-btn" id="send-btn" onclick="onSendClick()" aria-label="Enviar">
-          <!-- seta → -->
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <line x1="5" y1="12" x2="19" y2="12"/>
-            <polyline points="13 6 19 12 13 18"/>
-          </svg>
-        </button>
-      </div>
-
-      </div>
-
-      <!-- Painel lateral de memória (só em tela cheia) -->
-      <aside class="memory-panel" id="memory-panel">
-        <div class="memory-panel-title">Memória</div>
-        <div class="memory-list" id="memory-list"></div>
-      </aside>
+      </main>
 
     </div>
   </div>

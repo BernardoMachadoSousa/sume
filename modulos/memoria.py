@@ -235,8 +235,12 @@ def processar_memoria(comando: str) -> str | None:
         return _processar_listar()
 
     if any(p in comando for p in ("no vault", "no obsidian", "anote no vault",
-                                  "guarde no vault", "crie uma nota")):
+                                    "guarde no vault", "crie uma nota")):
         return _processar_vault(original)
+    if any(p in comando for p in ("no meu diario", "no diario", "anote no diario",
+                                    "registre no diario", "anotar no diario",
+                                    "escreva no diario")):
+        return _processar_diario(original)
 
     return None
 
@@ -294,7 +298,7 @@ def _processar_vault(comando: str) -> str:
     from modulos import vault
 
     for marcador in ("anote no vault que ", "anota no vault que ",
-                     "guarde no vault que ", "crie uma nota que "):
+                      "guarde no vault que ", "crie uma nota que "):
         if marcador in comando.lower():
             corpo = comando.lower().split(marcador, 1)[1].strip(" .?!")
             if not corpo:
@@ -307,6 +311,24 @@ def _processar_vault(comando: str) -> str:
                 return f"Anotei no vault: {caminho}"
             return "Não consegui escrever a nota no vault."
     return "Use assim: anote no vault que ..."
+
+
+def _processar_diario(comando: str) -> str:
+    """'anotar no diario que X' anexa ao diario de hoje."""
+    from modulos import diario
+
+    for marcador in ("anotar no diario que ", "anote no diario que ",
+                      "registre no diario que ", "escreva no diario que "):
+        if marcador in comando.lower():
+            conteudo = comando.lower().split(marcador, 1)[1].strip(" .?!")
+            if not conteudo:
+                return "Me diz o que devo anotar no diario."
+            resultado = diario.anotar_no_diario(conteudo)
+            if resultado:
+                return resultado
+            return "Falha ao anotar no diario."
+    return "Use assim: anotar no diario que ..."
+
 
 def _migrar_json():
     json_path = "dados/memorias.json"
