@@ -447,4 +447,3 @@ window.addEventListener('resize', () => {
     otimizarParaMobile();
   }
 });
-}
