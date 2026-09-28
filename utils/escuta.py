@@ -182,7 +182,16 @@ def ouvir() -> str:
                 return ""
 
             audio = _resample_para_whisper(audio, taxa_nativa)
-            resultado = modelo.transcribe(audio, language="pt", fp16=False, verbose=False)
+            try:
+                resultado = modelo.transcribe(audio, language="pt", fp16=False, verbose=False)
+            except RuntimeError as e:
+                log_erro("escuta", f"Erro de transcrição Whisper: {e}")
+                return ""
+            
+            if "text" not in resultado:
+                log_erro("escuta", "Resposta do Whisper sem chave 'text'")
+                return ""
+            
             texto = resultado["text"].strip()
 
             if texto:

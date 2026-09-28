@@ -2,9 +2,31 @@ import subprocess
 import webbrowser
 import os
 import json
+import re
 from utils.logger import erro as log_erro
 
 CATALOGO_CACHE = "dados/catalogo_programas.json"
+
+# Whitelist de executáveis permitidos - evita command injection
+WHITELIST_EXE = {
+    "calc.exe", "calculadora.exe",
+    "notepad.exe", "notas.exe",
+    "cmd.exe", "terminal.exe",
+    "explorer.exe", "explorador.exe",
+    "winword.exe", "word.exe",
+    "excel.exe",
+    "powerpnt.exe", "powerpoint.exe",
+    "mspaint.exe", "paint.exe",
+}
+
+WHITELIST_PROC = {
+    "CalculatorApp.exe", "calc.exe",
+    "notepad.exe",
+    "cmd.exe", "terminal.exe",
+    "explorer.exe",
+    "chrome.exe", "firefox.exe", "msedge.exe",
+    "winword.exe", "excel.exe",
+}
 
 def _carregar_catalogo() -> dict:
     if os.path.exists(CATALOGO_CACHE):
@@ -41,9 +63,8 @@ CATALOGO = _carregar_catalogo()
 
 
 def _abrir(nome: str) -> str:
-    import re
     n = nome.lower().strip()
-    n = re.sub(r'[^\w\s]', '', n)  # remove pontuação
+    n = re.sub(r'[^\w\s]', '', n)
     
     exes = {
         "calc": "calc.exe", "calculadora": "calc.exe",
@@ -55,15 +76,29 @@ def _abrir(nome: str) -> str:
     }
     for chave, exe in exes.items():
         if chave in n:
-            subprocess.Popen(exe, shell=True)
-            return f"Abrindo {chave}."
+            if exe not in WHITELIST_EXE:
+                log_erro("automacoes", f"Tentativa de abrir {exe} (não está na whitelist)")
+                return f"Não consigo abrir {chave}."
+            try:
+                subprocess.Popen([exe])
+                return f"Abrindo {chave}."
+            except Exception as e:
+                log_erro("automacoes", f"Erro ao abrir {exe}: {e}")
+                return f"Erro ao abrir {chave}."
     
     for nome_atalho, caminho in CATALOGO.items():
         if n in nome_atalho:
-            os.startfile(caminho)
-            return f"Abrindo {nome_atalho}."
+            try:
+                if not os.path.abspath(caminho).startswith(os.path.expanduser("~")):
+                    log_erro("automacoes", f"Path traversal detectado: {caminho}")
+                    return f"Caminho inválido."
+                os.startfile(caminho)
+                return f"Abrindo {nome_atalho}."
+            except Exception as e:
+                log_erro("automacoes", f"Erro ao abrir {caminho}: {e}")
+                return f"Erro ao abrir {nome_atalho}."
     
-    if " " not in n:
+    if " " not in n and re.match(r'^[a-z0-9\-]+$', n):
         webbrowser.open(f"https://www.{n}.com")
         return f"Abrindo {n}.com."
     
@@ -71,6 +106,7 @@ def _abrir(nome: str) -> str:
 
 def _fechar(nome: str) -> str:
     n = nome.lower().strip()
+    n = re.sub(r'[^\w\s]', '', n)
     
     processos = {
         "calc": "CalculatorApp.exe", "calculadora": "CalculatorApp.exe",
@@ -82,28 +118,36 @@ def _fechar(nome: str) -> str:
     
     for chave, proc in processos.items():
         if chave in n:
-            os.system(f"taskkill /f /im {proc} 2>nul")
-            return f"{chave} fechado."
+            if proc not in WHITELIST_PROC:
+                log_erro("automacoes", f"Tentativa de fechar {proc} (não está na whitelist)")
+                return f"Não consigo fechar {chave}."
+            try:
+                subprocess.run(["taskkill", "/f", "/im", proc], capture_output=True, timeout=5)
+                return f"{chave} fechado."
+            except Exception as e:
+                log_erro("automacoes", f"Erro ao fechar {proc}: {e}")
+                return f"Erro ao fechar {chave}."
     
     try:
-        # errors="replace": o tasklist é localizado e devolve o code page do
-        # sistema. Um nome de processo com acento derrubava a decodificação.
         r = subprocess.run(
-            'tasklist /fo csv /nh',
-            shell=True,
+            ['tasklist', '/fo', 'csv', '/nh'],
             capture_output=True,
             text=True,
             errors="replace",
+            timeout=10
         )
         for linha in r.stdout.splitlines():
             if n in linha.lower():
                 p = linha.split('","')[0].strip('"')
-                os.system(f"taskkill /f /im {p} 2>nul")
-                return f"{nome} fechado."
+                if re.match(r'^[a-zA-Z0-9\-_.]+\.exe$', p):
+                    try:
+                        subprocess.run(["taskkill", "/f", "/im", p], capture_output=True, timeout=5)
+                        return f"{nome} fechado."
+                    except Exception as e:
+                        log_erro("automacoes", f"Erro ao fechar {p}: {e}")
     except Exception as e:
-        log_erro("automacoes", f"tasklist: {e}")
+        log_erro("automacoes", f"tasklist error: {e}")
     
-    os.system(f'taskkill /f /fi "IMAGENAME eq *{n}*" 2>nul')
     return f"Tentei fechar {nome}."
 
 def executar(comando: str) -> str | None:

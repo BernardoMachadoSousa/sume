@@ -5,6 +5,7 @@ Carrega e salva preferências em dados/config.json.
 
 import json
 import os
+import threading
 from utils.logger import erro as log_erro
 
 CONFIG_FILE = "dados/config.json"
@@ -35,25 +36,52 @@ PADRAO = {
     ],
 }
 
+_config_cache = None
+_config_lock = threading.Lock()
+
 def carregar() -> dict:
-    if os.path.exists(CONFIG_FILE):
-        try:
-            with open(CONFIG_FILE, "r", encoding="utf-8") as f:
-                dados = json.load(f)
-                return {**PADRAO, **dados}  # mescla com padrão
-        except (json.JSONDecodeError, OSError) as e:
-            log_erro("config", f"config.json corrompido/ilegível, usando padrão: {e}")
-    return PADRAO.copy()
+    global _config_cache
+    
+    if _config_cache is not None:
+        return _config_cache.copy()
+    
+    with _config_lock:
+        if _config_cache is not None:
+            return _config_cache.copy()
+        
+        if os.path.exists(CONFIG_FILE):
+            try:
+                with open(CONFIG_FILE, "r", encoding="utf-8") as f:
+                    dados = json.load(f)
+                    _config_cache = {**PADRAO, **dados}
+                    return _config_cache.copy()
+            except (json.JSONDecodeError, OSError) as e:
+                log_erro("config", f"config.json corrompido/ilegível, usando padrão: {e}")
+        
+        _config_cache = PADRAO.copy()
+        return _config_cache.copy()
 
 def salvar(config: dict):
+    global _config_cache
+    
     os.makedirs("dados", exist_ok=True)
     with open(CONFIG_FILE, "w", encoding="utf-8") as f:
         json.dump(config, f, indent=2, ensure_ascii=False)
+    
+    with _config_lock:
+        _config_cache = {**PADRAO, **config}
 
 def get(chave: str, padrao=None):
-    return carregar().get(chave, padrao)
+    config = carregar()
+    return config.get(chave, padrao)
 
 def set(chave: str, valor):
     config = carregar()
     config[chave] = valor
     salvar(config)
+
+def limpar_cache():
+    """Limpa o cache de configurações (útil para testes)."""
+    global _config_cache
+    with _config_lock:
+        _config_cache = None

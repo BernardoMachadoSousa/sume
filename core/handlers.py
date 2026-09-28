@@ -49,7 +49,6 @@ def _get_time(alvo: str, comando: str):
 
 @registrar("GET_DATE")
 def _get_date(alvo: str, comando: str):
-    import locale
     agora = datetime.now()
     dias = ["segunda-feira", "terça-feira", "quarta-feira", "quinta-feira",
             "sexta-feira", "sábado", "domingo"]

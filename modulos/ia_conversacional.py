@@ -8,6 +8,7 @@ Fallback: Ollama local (se sem internet)
 import os
 import requests
 import ollama
+import threading
 from utils import config as cfg
 from utils.logger import erro as log_erro
 from utils.logger import info as log_info
@@ -31,6 +32,7 @@ Características:
 Importante: O usuário falará com você SOMENTE VIA VOZ. Não envie listas imensas de markdown, evite ler código gigantesco. Seja breve."""
 
 historico = []
+_historico_lock = threading.Lock()
 
 def _credencial_groq() -> str:
     """Verifica variável GROQ_API_KEY no Windows."""
@@ -53,15 +55,17 @@ def _contexto_extra(nome_usuario, incluir_memoria) -> str:
 
 def _montar_mensagens(nome_usuario, extras=""):
     mensagens = [{"role": "system", "content": CONTEXTO_SISTEMA + extras}]
-    for msg in historico[-MENSAGENS_NO_HISTORICO:]:
-        mensagens.append(msg)
+    with _historico_lock:
+        for msg in historico[-MENSAGENS_NO_HISTORICO:]:
+            mensagens.append(msg)
     return mensagens
 
 def _registrar(usuario: str, assistente: str):
-    historico.append({"role": "user", "content": usuario})
-    historico.append({"role": "assistant", "content": assistente})
-    if len(historico) > HISTORICO_MAXIMO:
-        del historico[:-HISTORICO_MAXIMO]
+    with _historico_lock:
+        historico.append({"role": "user", "content": usuario})
+        historico.append({"role": "assistant", "content": assistente})
+        if len(historico) > HISTORICO_MAXIMO:
+            del historico[:-HISTORICO_MAXIMO]
 
 def _responder_groq(mensagem, nome_usuario):
     """Bate no servidor Ultra-rápido da Groq Llama 3 70B."""
@@ -121,5 +125,6 @@ def backend_atual() -> str:
 
 def limpar_historico():
     global historico
-    historico = []
+    with _historico_lock:
+        historico = []
     return "Memória curta redefinida."

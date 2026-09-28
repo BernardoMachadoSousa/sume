@@ -121,7 +121,17 @@ def _pergunta_ambiguidade(candidatos: list) -> str:
     opcoes = " ou ".join(descricoes)
     return f"Não tenho certeza se você quer {opcoes}. Pode ser mais específico?"
 
-def processar(comando: str) -> str:
+def _processar_interno(comando: str, retornar_dados: bool = False):
+    """
+    Lógica central de processamento de comandos.
+    
+    Args:
+        comando: Comando do usuário
+        retornar_dados: Se True, retorna dict com dados estruturados. Se False, retorna apenas string.
+    
+    Returns:
+        str se retornar_dados=False, dict se retornar_dados=True
+    """
     inicio = time.time()
     comando = comando.lower().strip()
 
@@ -129,6 +139,8 @@ def processar(comando: str) -> str:
     if resposta_memoria:
         _marcar_intencao("MEMORIA")
         log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
+        if retornar_dados:
+            return {"resposta": resposta_memoria, "dados": None, "acao": "MEMORIA"}
         return resposta_memoria
 
     acao, alvo, confianca = _interpretar_comando(comando)
@@ -139,6 +151,8 @@ def processar(comando: str) -> str:
         log_intent("AMBIGUOUS", str([c[0] for c in candidatos]), confianca)
         resposta = _pergunta_ambiguidade(candidatos)
         log_resultado(True, resposta, (time.time() - inicio) * 1000)
+        if retornar_dados:
+            return {"resposta": resposta, "dados": None, "acao": "AMBIGUOUS"}
         return resposta
 
     if acao == "CHAT":
@@ -150,6 +164,12 @@ def processar(comando: str) -> str:
     resultado = rotear(acao, alvo, comando)
     if resultado is not None:
         log_resultado(resultado.sucesso, resultado.mensagem, (time.time() - inicio) * 1000)
+        if retornar_dados:
+            return {
+                "resposta": resultado.mensagem,
+                "dados": resultado.dados if hasattr(resultado, 'dados') else None,
+                "acao": acao
+            }
         return resultado.mensagem
 
     try:
@@ -157,70 +177,20 @@ def processar(comando: str) -> str:
         nome = memorias.get("nome_usuario") if memorias else None
         resposta = conversar(comando, nome_usuario=nome)
         log_resultado(True, resposta, (time.time() - inicio) * 1000)
+        if retornar_dados:
+            return {"resposta": resposta, "dados": None, "acao": "CHAT"}
         return resposta
     except Exception as e:
         log_erro("nexus_core", str(e))
-        return "Desculpe, ocorreu um erro ao processar seu comando."
+        erro_msg = "Desculpe, ocorreu um erro ao processar seu comando."
+        if retornar_dados:
+            return {"resposta": erro_msg, "dados": None, "acao": "ERROR"}
+        return erro_msg
 
+def processar(comando: str) -> str:
+    """Processa comando e retorna resposta (string simples)."""
+    return _processar_interno(comando, retornar_dados=False)
 
 def processar_com_dados(comando: str) -> dict:
-    """Versão do processar que retorna dados estruturados (para busca)."""
-    inicio = time.time()
-    comando = comando.lower().strip()
-
-    resposta_memoria = processar_memoria(comando)
-    if resposta_memoria:
-        _marcar_intencao("MEMORIA")
-        log_resultado(True, resposta_memoria, (time.time() - inicio) * 1000)
-        return {
-            "resposta": resposta_memoria,
-            "dados": None,
-            "acao": "MEMORIA"
-        }
-
-    acao, alvo, confianca = _interpretar_comando(comando)
-
-    if acao == "AMBIGUOUS":
-        candidatos = alvo  
-        _marcar_intencao("AMBIGUOUS", " ou ".join(c[0] for c in candidatos), confianca)
-        log_intent("AMBIGUOUS", str([c[0] for c in candidatos]), confianca)
-        resposta = _pergunta_ambiguidade(candidatos)
-        log_resultado(True, resposta, (time.time() - inicio) * 1000)
-        return {
-            "resposta": resposta,
-            "dados": None,
-            "acao": "AMBIGUOUS"
-        }
-
-    if acao == "CHAT":
-        _marcar_intencao("CHAT", comando)
-    else:
-        _marcar_intencao(acao, alvo, confianca)
-    log_intent(acao, alvo, confianca)
-
-    resultado = rotear(acao, alvo, comando)
-    if resultado is not None:
-        log_resultado(resultado.sucesso, resultado.mensagem, (time.time() - inicio) * 1000)
-        return {
-            "resposta": resultado.mensagem,
-            "dados": resultado.dados if hasattr(resultado, 'dados') else None,
-            "acao": acao
-        }
-
-    try:
-        memorias = carregar_memorias()
-        nome = memorias.get("nome_usuario") if memorias else None
-        resposta = conversar(comando, nome_usuario=nome)
-        log_resultado(True, resposta, (time.time() - inicio) * 1000)
-        return {
-            "resposta": resposta,
-            "dados": None,
-            "acao": "CHAT"
-        }
-    except Exception as e:
-        log_erro("nexus_core", str(e))
-        return {
-            "resposta": "Desculpe, ocorreu um erro ao processar seu comando.",
-            "dados": None,
-            "acao": "ERROR"
-        }
+    """Processa comando e retorna resposta com dados estruturados (para buscas e plugins)."""
+    return _processar_interno(comando, retornar_dados=True)

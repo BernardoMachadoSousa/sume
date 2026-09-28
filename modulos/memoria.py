@@ -151,23 +151,6 @@ def limpar_sessao():
     _sessao.clear()
 
 
-def expira_em(chave: str) -> datetime | None:
-    """Quando essa chave vence, se vencer."""
-    if chave in _sessao:
-        valor, expira = _sessao[chave]
-        return datetime.fromtimestamp(expira) if expira else None
-    try:
-        with _conectar() as conn:
-            row = conn.execute(
-                "SELECT expira_em FROM memoria WHERE chave = ?", (chave,)
-            ).fetchone()
-            if row and row[0]:
-                return datetime.fromtimestamp(row[0])
-    except Exception as e:
-        log_erro("memoria", str(e))
-    return None
-
-
 def guardar_nome(nome: str) -> str:
     guardar("nome_usuario", nome, PERMANENTE)
     return f"Prazer, {nome}! Vou me lembrar disso."

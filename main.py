@@ -8,6 +8,8 @@ from modulos import memoria
 from utils.escuta import ouvir, _carregar_modelo
 from utils.voz import falar
 
+window = None
+
 class NexusAPI:
     def processar_comando(self, comando: str) -> str:
         """Processa comando (voz ou texto) e retorna resposta"""
@@ -21,7 +23,7 @@ class NexusAPI:
         
         if resposta and resposta != "desligar":
             falar(resposta)
-        if resposta == "desligar":
+        if resposta == "desligar" and window:
             threading.Timer(0.5, window.destroy).start()
         
         return {
@@ -55,10 +57,12 @@ class NexusAPI:
         return ouvir()
 
     def minimizar(self):
-        window.minimize()
+        if window:
+            window.minimize()
 
     def fechar(self):
-        window.destroy()
+        if window:
+            window.destroy()
 
 
 if __name__ == "__main__":
@@ -87,16 +91,18 @@ if __name__ == "__main__":
     # Thread de disparo de lembretes (verifica a cada 30s)
     def _loop_lembretes():
         from modulos.lembretes import verificar_disparos
+        from utils.logger import erro as log_erro
         while True:
             try:
                 for texto in verificar_disparos():
                     aviso = f"Lembrete: {texto}"
                     falar(aviso)
-                    window.evaluate_js(
-                        f"window._sume_lembrete && window._sume_lembrete({repr(aviso)})"
-                    )
-            except Exception:
-                pass
+                    if window:
+                        window.evaluate_js(
+                            f"window._sume_lembrete && window._sume_lembrete({repr(aviso)})"
+                        )
+            except Exception as e:
+                log_erro("lembretes_loop", f"Erro ao verificar lembretes: {e}")
             time.sleep(30)
 
     threading.Thread(target=_loop_lembretes, daemon=True).start()
