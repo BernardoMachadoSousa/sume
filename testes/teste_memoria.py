@@ -257,6 +257,10 @@ def ollama_falso(model, messages):
     return {"message": {"content": "resposta de teste"}}
 
 
+# Originais guardados para restaurar no fim do script (ver final do arquivo)
+_OLLAMA_CHAT_ORIGINAL = ia.ollama.chat
+_CREDENCIAL_GROQ_ORIGINAL = ia._credencial_groq
+
 ia.ollama.chat = ollama_falso
 ia.historico = []
 
@@ -335,6 +339,11 @@ def ollama_quebrado(model, messages):
 ia.ollama.chat = ollama_quebrado
 r = ia.conversar("oi")
 checar("Ollama fora devolve recado amigável", "Ollama" in r, str(r))
+
+# Restaura o chat do ollama: `ia.ollama` é o módulo real, então deixar o mock
+# aqui faz qualquer teste seguinte neste processo receber "conexão recusada".
+ia.ollama.chat = _OLLAMA_CHAT_ORIGINAL
+ia._credencial_groq = _CREDENCIAL_GROQ_ORIGINAL
 
 ia.cfg.set("usar_omniroute", False)
 ia.cfg.set("compartilhar_conteudo_nuvem", False)

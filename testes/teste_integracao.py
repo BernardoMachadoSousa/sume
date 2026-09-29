@@ -37,6 +37,11 @@ origem = os.getcwd()
 tmp = tempfile.mkdtemp(prefix="sume_teste_integracao_")
 os.chdir(tmp)
 
+# Guardado dos originais para restaurar no final: este arquivo roda como
+# script e as substituições abaixo vazam para o resto do processo.
+_OLLAMA_CHAT_ORIGINAL = ia.ollama.chat
+_CREDENCIAL_GROQ_ORIGINAL = ia._credencial_groq
+
 print(f"Diretório de teste: {tmp}\n")
 
 print("--- Cenário 1: Usuário com privacidade ativa ---")
@@ -166,6 +171,12 @@ checar("sem chave sk- em handlers.py", "sk-" not in fonte_busca)
 
 print("\n--- Cenário 10: Limpeza e finalização ---")
 
+# Restaura o que foi monkeypatchado. `ia.ollama` é o módulo real importado
+# por ia_conversacional: trocar o atributo `chat` nele afeta o processo
+# inteiro. Sem restaurar, qualquer teste que rode depois neste processo
+# recebe as respostas do mock e falha por motivo errado.
+ia.ollama.chat = _OLLAMA_CHAT_ORIGINAL
+ia._credencial_groq = _CREDENCIAL_GROQ_ORIGINAL
 os.chdir(origem)
 shutil.rmtree(tmp, ignore_errors=True)
 checar("sistema de teste finalizado", True)

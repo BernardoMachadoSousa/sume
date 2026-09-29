@@ -38,7 +38,14 @@ def _credencial_groq() -> str:
     """Verifica variável GROQ_API_KEY no Windows."""
     return os.environ.get("GROQ_API_KEY") or cfg.get("groq_api_key") or ""
 
-def _contexto_extra(nome_usuario, incluir_memoria) -> str:
+def _contexto_extra(nome_usuario, incluir_memoria, consulta=""):
+    """
+    Monta o bloco de contexto injetado no system prompt.
+
+    `incluir_memoria` é a trava de privacidade: quando o modelo é remoto e o
+    usuário não autorizou, volta string vazia e nada de memória — nem do
+    SQLite, nem do vault — sai da máquina.
+    """
     if not incluir_memoria:
         return ""
     partes = []
@@ -51,6 +58,26 @@ def _contexto_extra(nome_usuario, incluir_memoria) -> str:
     if memorias:
         linhas = "\n".join(f"- {k}: {v}" for k, v in list(memorias.items())[:10])
         partes.append(f"O que você já sabe definitivamente sobre o usuário:\n{linhas}")
+
+    # Memória em 3 camadas (modulos/recall.py): T1 sempre, T2 só se a pergunta
+    # pedir. Sem isso o modelo ficaria cego para o grafo do vault.
+    try:
+        from modulos import recall
+        t1 = recall.contexto_quente()
+        if t1:
+            partes.append(
+                "Contexto do seu segundo cérebro (fatos relevantes, use quando fizer sentido):\n"
+                f"{t1}"
+            )
+        if consulta:
+            t2 = recall.recuperar(consulta, limite=5)
+            if t2:
+                linhas_t2 = "\n".join(f"- {r['titulo']}: {r['texto']}" for r in t2)
+                partes.append(f"Recuperado do seu cérebro para esta pergunta:\n{linhas_t2}")
+    except Exception as e:
+        # Recall é um reforço: se falhar, a conversa continua sem ele.
+        log_erro("ia", f"recall indisponível: {e}")
+
     return ("\n" + "\n".join(partes)) if partes else ""
 
 def _montar_mensagens(nome_usuario, extras=""):
@@ -74,7 +101,7 @@ def _responder_groq(mensagem, nome_usuario):
         return _responder_ollama(mensagem, nome_usuario)
     
     compartilhar = cfg.get("compartilhar_conteudo_nuvem", False)
-    extras = _contexto_extra(nome_usuario, compartilhar)
+    extras = _contexto_extra(nome_usuario, compartilhar, consulta=mensagem)
     mensagens = _montar_mensagens(nome_usuario, extras)
     mensagens.append({"role": "user", "content": mensagem})
 
@@ -104,7 +131,7 @@ def _responder_groq(mensagem, nome_usuario):
 
 def _responder_ollama(mensagem, nome_usuario):
     import ollama
-    extras = _contexto_extra(nome_usuario, True)
+    extras = _contexto_extra(nome_usuario, True, consulta=mensagem)
     mensagens = _montar_mensagens(nome_usuario, extras)
     mensagens.append({"role": "user", "content": mensagem})
     try:

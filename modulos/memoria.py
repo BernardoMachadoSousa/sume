@@ -15,6 +15,7 @@ sessão, e nada disso vai para um modelo remoto sem autorização explícita.
 import sqlite3
 import os
 import time
+from contextlib import contextmanager
 from datetime import datetime, timedelta
 
 from utils.logger import erro as log_erro
@@ -33,7 +34,9 @@ _sessao: dict[str, tuple[str, float | None]] = {}
 
 
 def _conectar():
-    os.makedirs("dados", exist_ok=True)
+    pasta = os.path.dirname(os.path.abspath(DB))
+    if pasta:
+        os.makedirs(pasta, exist_ok=True)
     conn = sqlite3.connect(DB)
     conn.execute(
         "CREATE TABLE IF NOT EXISTS memoria ("
@@ -51,6 +54,30 @@ def _conectar():
         conn.execute("ALTER TABLE memoria ADD COLUMN expira_em REAL")
     conn.commit()
     return conn
+
+
+@contextmanager
+def _sessao_db():
+    """
+    Abre uma conexão, garante commit/rollback e fecha.
+
+    Duas coisas que o `with sqlite3.connect(...)` puro não resolve:
+      1. ele NÃO fecha a conexão ao final do bloco — só faz commit/rollback.
+         Sem o close() explícito, o handle do arquivo fica aberto (vaza em
+         todo guardar/lembrar) e no Windows isso impede backup, rename e
+         remoção do banco.
+      2. se você trocar por um contextmanager seu, precisa commitar você mesmo:
+         conn.close() DESCARTA a transação pendente. Por isso o commit aqui.
+    """
+    conn = _conectar()
+    try:
+        yield conn
+        conn.commit()
+    except Exception:
+        conn.rollback()
+        raise
+    finally:
+        conn.close()
 
 
 def _purgar(conn):
@@ -74,7 +101,7 @@ def guardar(chave: str, valor: str, camada: str = PERMANENTE):
         if camada == SESSAO:
             _sessao[chave] = (valor, expira)
             return
-        with _conectar() as conn:
+        with _sessao_db() as conn:
             conn.execute(
                 "INSERT OR REPLACE INTO memoria (chave, valor, camada, expira_em)"
                 " VALUES (?, ?, ?, ?)",
@@ -93,7 +120,7 @@ def lembrar(chave: str) -> str | None:
             return None
         return valor
     try:
-        with _conectar() as conn:
+        with _sessao_db() as conn:
             _purgar(conn)
             conn.commit()
             row = conn.execute(
@@ -117,7 +144,7 @@ def carregar(camada: str | None = None) -> dict:
                 resultado[chave] = valor
     if camada in (None, CURTA, PERMANENTE):
         try:
-            with _conectar() as conn:
+            with _sessao_db() as conn:
                 _purgar(conn)
                 conn.commit()
                 if camada:
@@ -136,7 +163,7 @@ def esquecer(chave: str) -> bool:
     """Apaga a chave de todas as camadas."""
     removido = _sessao.pop(chave, None) is not None
     try:
-        with _conectar() as conn:
+        with _sessao_db() as conn:
             cur = conn.execute("DELETE FROM memoria WHERE chave = ?", (chave,))
             removido = removido or cur.rowcount > 0
             conn.commit()
@@ -239,6 +266,14 @@ def _processar_anotar(comando: str) -> str:
             conteudo = comando.lower().split(marcador, 1)[1].strip(" .?!")
             if not conteudo:
                 return "Me diz o que eu devo anotar."
+            # Guarda de segurança: nada sensível entra na memória (vai para o vault em texto plano)
+            from utils.segredos import detectar_segredo
+            achado = detectar_segredo(conteudo)
+            if achado:
+                return (
+                    f"Não vou guardar isso: parece um {achado}. "
+                    "Segredos ficam fora da minha memória — use um cofre pra isso."
+                )
             camada = _camada_do_comando(comando.lower())
             chave = conteudo[:60]
             guardar(chave, conteudo, camada)

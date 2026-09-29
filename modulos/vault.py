@@ -16,7 +16,14 @@ from datetime import datetime
 
 from utils.logger import erro as log_erro
 from utils import config as cfg
-from utils.nome_utils import normalizar_nome
+from utils.nome_utils import (
+    normalizar_nome,
+    score_entidade,
+    e_pronome_usuario,
+    resolver_ancora_identidade,
+    LIMIAR_FUSAO,
+    LIMIAR_DUVIDA,
+)
 
 LIMITE_CONTEXTO = 4000
 ROOT = None
@@ -56,7 +63,6 @@ def _construir_indice():
                 texto = f.read()
         except Exception:
             continue
-        # Extract title and aliases from frontmatter
         titulo = None
         aliases = []
         partes = texto.split("---", 2)
@@ -65,19 +71,8 @@ def _construir_indice():
             for linha in frontmatter.splitlines():
                 if linha.startswith("titulo:"):
                     titulo = linha.split(":", 1)[1].strip()
-                elif linha.startswith("aliases:"):
-                    # Parse list like: aliases: [item1, item2]
-                    import ast
-                    try:
-                        aliases_str = linha.split(":", 1)[1].strip()
-                        if aliases_str.startswith("[") and aliases_str.endswith("]"):
-                            aliases = ast.literal_eval(aliases_str)
-                            if not isinstance(aliases, list):
-                                aliases = []
-                        else:
-                            aliases = []
-                    except Exception:
-                        aliases = []
+                    break
+            aliases = _frontmatter_campo(frontmatter, "aliases")
         if titulo is None:
             # Fallback: filename without extension
             titulo = nome[:-3].replace("-", " ")
@@ -91,102 +86,162 @@ def _construir_indice():
     _INDICE_VALIDO = True
 
 
-def resolver_entidade(nome: str) -> str | None:
+def _titulos_unicos_indice() -> list[str]:
+    if not _INDICE:
+        return []
+    vistos = []
+    for titulo, _ in _INDICE.values():
+        if titulo not in vistos:
+            vistos.append(titulo)
+    return vistos
+
+
+def _melhor_candidato(nome: str) -> tuple[str, float] | None:
+    melhor_titulo = None
+    melhor_score = 0.0
+    for titulo in _titulos_unicos_indice():
+        s = score_entidade(nome, titulo)
+        if s > melhor_score or (s == melhor_score and melhor_titulo and len(titulo) > len(melhor_titulo)):
+            melhor_score = s
+            melhor_titulo = titulo
+    if melhor_titulo is None:
+        return None
+    return melhor_titulo, melhor_score
+
+
+def resolver_entidade(nome: str, nome_usuario: str | None = None) -> str | None:
     """
-    Dado um nome (como extraído pelo LLM ou dito pelo usuário), retorna o
-    título canônico da nota que já existe para esse nome, ou None se for nova.
-    Passos:
-      1. Normaliza o nome de entrada.
-      2. Procura no índice por correspondência exata (normalizado).
-      3. Se não encontrar, tenta correspondência por "começa com" (prefixo)
-         onde o candidato normalizado começa com o nome normalizado e é maior.
-         Entre todos tais candidatos, escolhe o que tiver o título mais longo
-         (mais específico). Se nenhum candidato, retorna None.
+    Devolve o título canônico de uma nota que já existe, ou None.
+    Nunca devolve um título sem arquivo correspondente.
     """
     global _INDICE_VALIDO
     if not _INDICE_VALIDO:
         _construir_indice()
+
     norm = normalizar_nome(nome)
     if not norm:
         return None
-    # Exact match
-    if norm in _INDICE:
-        return _INDICE[norm][0]  # canonical title
-    # Prefix match: find all entries where the normalized canonical starts with norm
-    candidates = []
-    for n, (titulo, _) in _INDICE.items():
-        if n.startswith(norm) and len(n) > len(norm):
-            candidates.append((titulo, n))
-    if not candidates:
-        return None
-    # Choose the candidate with the longest title (most specific)
-    # In case of tie, choose the one with longest normalized string? We'll just pick first after sorting by length descending.
-    candidates.sort(key=lambda x: len(x[0]), reverse=True)
-    return candidates[0][0]
+
+    if nome_usuario and resolver_ancora_identidade(nome, nome_usuario):
+        norm_usuario = normalizar_nome(nome_usuario)
+        if _INDICE and norm_usuario in _INDICE:
+            return _INDICE[norm_usuario][0]
+        hit = _melhor_candidato(nome_usuario)
+        if hit and hit[1] >= LIMIAR_FUSAO:
+            return hit[0]
+        if e_pronome_usuario(nome):
+            return None
+
+    if _INDICE and norm in _INDICE:
+        return _INDICE[norm][0]
+
+    hit = _melhor_candidato(nome)
+    if hit and hit[1] >= LIMIAR_FUSAO:
+        return hit[0]
+    return None
 
 
-def obter_ou_criar_nota(titulo: str, corpo_inicial: str = "", tags=None, links=None, aliases=None) -> str:
+def _frontmatter_campo(frontmatter: str, chave: str) -> list[str]:
+    for linha in frontmatter.splitlines():
+        if linha.startswith(chave + ":"):
+            try:
+                bruto = linha.split(":", 1)[1].strip()
+                if bruto.startswith("[") and bruto.endswith("]"):
+                    inner = bruto[1:-1].strip()
+                    if not inner:
+                        return []
+                    return [p.strip().strip("'\"") for p in inner.split(",") if p.strip()]
+                return [t.strip().strip("'\"") for t in bruto.strip("[]").split(",") if t.strip()]
+            except Exception:
+                return []
+    return []
+
+
+def _frontmatter_objeto(frontmatter: str, chave: str) -> list[dict]:
+    """Lê chaves que são JSON-like arrays de objetos (propriedades, relacoes)."""
+    for linha in frontmatter.splitlines():
+        if linha.startswith(chave + ":"):
+            try:
+                bruto = linha.split(":", 1)[1].strip()
+                if not bruto.startswith("[") or not bruto.endswith("]"):
+                    return []
+                import ast
+                arr = ast.literal_eval(bruto)
+                if isinstance(arr, list):
+                    return arr
+            except Exception:
+                return []
+    return []
+
+
+def obter_ou_criar_nota(titulo: str, corpo_inicial: str = "", tags=None, links=None, aliases=None, nome_usuario: str | None = None, tipo_entidade=None, propriedades=None, relacoes=None) -> str:
     """
-    Usa resolver_entidade(titulo); se existir, apenas atualiza (append ou mescla fatos);
-    senão, cria nova.
-    Returns the path of the note.
+    Resolve o título para uma nota existente (incluindo typos) ou cria uma nova.
+    Se o nome for um typo de nota existente, grava o typo em aliases.
+    Na zona de dúvida (70–85%), cria nota nova com tag revisar_entidade.
+    Suporta criação/atualização de propriedades e relações estruturadas.
     """
-    existente = resolver_entidade(titulo)
-    if existente:
-        # Note exists; we could append or just return the path.
-        # For now, we just return the path (caller can decide to append).
-        # But we also want to merge aliases if provided.
-        if aliases is not None:
-            # Add any new aliases
-            nota_atual = _ler_raw(existente) or ""
-            # Extract current aliases from frontmatter
-            aliases_atuais = []
-            partes = nota_atual.split("---", 2)
-            if len(partes) >= 2:
-                frontmatter = partes[1]
-                for linha in frontmatter.splitlines():
-                    if linha.startswith("aliases:"):
-                        try:
-                            import ast
-                            aliases_str = linha.split(":", 1)[1].strip()
-                            if aliases_str.startswith("[") and aliases_str.endswith("]"):
-                                aliases_atuais = ast.literal_eval(aliases_str)
-                                if not isinstance(aliases_atuais, list):
-                                    aliases_atuais = []
-                        except Exception:
-                            aliases_atuais = []
-            # Combine
-            todas = list(set(aliases_atuais + [str(a).strip() for a in aliases if str(a).strip()]))
-            # Update the note with merged aliases (preserving existing content)
-            corpo = partes[2].strip() if len(partes) >= 3 else nota_atual.strip()
-            # Read tags and links to not lose them
-            if tags is None:
-                tags = []
-            if links is None:
-                links = []
-            if len(partes) >= 2:
-                for linha in frontmatter.splitlines():
-                    if linha.startswith("tags:") and not tags:
-                        try:
-                            t_str = linha.split(":", 1)[1].strip().strip("[]")
-                            tags = [t.strip() for t in t_str.split(",") if t.strip()]
-                        except Exception: pass
-                    elif linha.startswith("links:") and not links:
-                        try:
-                            l_str = linha.split(":", 1)[1].strip().strip("[]")
-                            links = [lk.strip() for lk in l_str.split(",") if lk.strip()]
-                        except Exception: pass
-            salvar(existente, corpo, tags=tags, links=links, aliases=todas)
+    existente = resolver_entidade(titulo, nome_usuario=nome_usuario)
+    caminho_existente = _caminho(existente) if existente else ""
+    if existente and os.path.exists(caminho_existente):
+        nota_atual = _ler_raw(existente) or ""
+        partes = nota_atual.split("---", 2)
+        frontmatter = partes[1] if len(partes) >= 2 else ""
+        
+        # Extrair campos existentes
+        aliases_atuais = _frontmatter_campo(frontmatter, "aliases")
+        tags_atuais = tags if tags else _frontmatter_campo(frontmatter, "tags")
+        links_atuais = links if links else _frontmatter_campo(frontmatter, "links")
+        
+        # Extrair propriedades e relações existentes
+        propriedades_atuais = _frontmatter_objeto(frontmatter, "propriedades")
+        relacoes_atuais = _frontmatter_objeto(frontmatter, "relacoes")
+        
+        # Atualizar aliases
+        todas = list(aliases_atuais)
+        for a in (aliases or []):
+            if str(a).strip() and str(a).strip() not in todas:
+                todas.append(str(a).strip())
+        if normalizar_nome(titulo) != normalizar_nome(existente) and titulo not in todas:
+            todas.append(titulo)
+        
+        # Atualizar corpo
+        corpo = partes[2].strip() if len(partes) >= 3 else (nota_atual.strip() or corpo_inicial)
+        if corpo_inicial and corpo_inicial.strip() and corpo_inicial.strip() not in corpo:
+            corpo = (corpo + "\n" + corpo_inicial.strip()).strip() if corpo else corpo_inicial.strip()
+        
+        # Salvar atualizando todas as propriedades
+        salvar(existente, corpo, 
+                tags=tags_atuais, 
+                links=links_atuais, 
+                aliases=todas,
+                tipo_entidade=tipo_entidade,
+                propriedades=propriedades or propriedades_atuais,
+                relacoes=relacoes or relacoes_atuais)
         return _caminho(existente)
-    else:
-        # Create new note
-        return salvar(titulo, corpo_inicial, tags=tags, links=links, aliases=aliases)
+
+    tags = list(tags or [])
+    hit = _melhor_candidato(titulo)
+    if hit and LIMIAR_DUVIDA <= hit[1] < LIMIAR_FUSAO:
+        tit_canon, _ = hit
+        if "revisar_entidade" not in tags:
+            tags.append("revisar_entidade")
+        corpo_inicial = (
+            (corpo_inicial or "")
+            + f"\n\n> [!WARNING] Alerta de Identidade\n"
+            + f"> O Sumé detectou que esta nota pode ser um erro de digitação para a entidade: [[{tit_canon}]].\n"
+        )
+    return salvar(titulo, corpo_inicial, tags=tags, links=links, aliases=aliases,
+                  tipo_entidade=tipo_entidade, propriedades=propriedades, relacoes=relacoes)
 
 
 def _ler_raw(titulo: str) -> str | None:
     """Lê o conteúdo completo do arquivo (frontmatter + corpo), ou None se não existir."""
     try:
-        caminho = _caminho(titulo)
+        canon = resolver_entidade(titulo) or titulo
+        caminho = _caminho(canon)
+        if not os.path.exists(caminho):
+            caminho = _caminho(titulo)
         if not os.path.exists(caminho):
             return None
         with open(caminho, "r", encoding="utf-8") as f:
@@ -194,6 +249,11 @@ def _ler_raw(titulo: str) -> str | None:
     except Exception as e:
         log_erro("vault", str(e))
         return None
+
+
+def _extrair_relacoes_frentematter(frontmatter: str) -> list[dict]:
+    """Extrai lista de relações do frontmatter."""
+    return _frontmatter_objeto(frontmatter, "relacoes")
 
 
 def adicionar_alias(titulo_canonico: str, alias: str) -> bool:
@@ -207,46 +267,16 @@ def adicionar_alias(titulo_canonico: str, alias: str) -> bool:
     if not existente:
         return False
     nota_atual = _ler_raw(existente) or ""
-    # Extract current aliases
-    aliases_atuais = []
     partes = nota_atual.split("---", 2)
-    if len(partes) >= 2:
-        frontmatter = partes[1]
-        for linha in frontmatter.splitlines():
-            if linha.startswith("aliases:"):
-                try:
-                    import ast
-                    aliases_str = linha.split(":", 1)[1].strip()
-                    if aliases_str.startswith("[") and aliases_str.endswith("]"):
-                        aliases_atuais = ast.literal_eval(aliases_str)
-                        if not isinstance(aliases_atuais, list):
-                            aliases_atuais = []
-                except Exception:
-                    aliases_atuais = []
-    # Check if alias already present (normalized)
+    frontmatter = partes[1] if len(partes) >= 2 else ""
+    aliases_atuais = _frontmatter_campo(frontmatter, "aliases")
     alias_norm = normalizar_nome(alias)
-    ja_existe = any(normalizar_nome(a) == alias_norm for a in aliases_atuais)
-    if ja_existe:
+    if any(normalizar_nome(a) == alias_norm for a in aliases_atuais):
         return False
-    # Add alias
     novas_aliases = aliases_atuais + [alias]
-    # Preserve existing content (body)
     corpo = partes[2].strip() if len(partes) >= 3 else nota_atual.strip()
-    # Read tags and links to not lose them
-    tags_atuais = []
-    links_atuais = []
-    if len(partes) >= 2:
-        for linha in frontmatter.splitlines():
-            if linha.startswith("tags:"):
-                try:
-                    t_str = linha.split(":", 1)[1].strip().strip("[]")
-                    tags_atuais = [t.strip() for t in t_str.split(",") if t.strip()]
-                except Exception: pass
-            elif linha.startswith("links:"):
-                try:
-                    l_str = linha.split(":", 1)[1].strip().strip("[]")
-                    links_atuais = [lk.strip() for lk in l_str.split(",") if lk.strip()]
-                except Exception: pass
+    tags_atuais = _frontmatter_campo(frontmatter, "tags")
+    links_atuais = _frontmatter_campo(frontmatter, "links")
     salvar(existente, corpo, tags=tags_atuais, links=links_atuais, aliases=novas_aliases)
     return True
 
@@ -260,25 +290,91 @@ def _caminho(titulo: str) -> str:
     return os.path.join(_pasta_vault(), f"{base or 'nota'}.md")
 
 
-def salvar(titulo: str, corpo: str, tags=None, links=None, aliases=None) -> str:
+def salvar(titulo: str, corpo: str, tags=None, links=None, aliases=None, tipo_entidade=None, propriedades=None, relacoes=None) -> str:
     """Cria ou sobrescreve uma nota e devolve o caminho do arquivo."""
     try:
         caminho = _caminho(titulo)
+        bruto = ""
+        if os.path.exists(caminho):
+            with open(caminho, "r", encoding="utf-8") as f:
+                bruto = f.read()
+        partes_exist = bruto.split("---", 2) if bruto else []
+        fm_exist = partes_exist[1] if len(partes_exist) >= 2 else ""
+        if tags is None:
+            tags = _frontmatter_campo(fm_exist, "tags")
+        if links is None:
+            links = _frontmatter_campo(fm_exist, "links")
+        if aliases is None:
+            aliases = _frontmatter_campo(fm_exist, "aliases")
         etiquetas = [t.lstrip("#") for t in (tags or []) if str(t).strip()]
+        aliases_lista = [str(a).strip() for a in (aliases or []) if str(a).strip()]
+        
+        # Format properties as YAML-like dict (simplified)
+        propriedades_str = ""
+        if propriedades:
+            if isinstance(propriedades, dict):
+                props_items = list(propriedades.items())
+            elif isinstance(propriedades, list):
+                props_items = []
+                for item in propriedades:
+                    if isinstance(item, dict):
+                        props_items.extend(item.items())
+                    elif isinstance(item, (list, tuple)) and len(item) == 2:
+                        props_items.append((str(item[0]), item[1]))
+            else:
+                props_items = []
+            props_list = []
+            for k, v in props_items:
+                kk = str(k)
+                if isinstance(v, str):
+                    vv = f'"{v.replace(chr(34), chr(39))}"'
+                elif isinstance(v, bool):
+                    vv = str(v)
+                elif isinstance(v, (int, float)):
+                    vv = str(v)
+                else:
+                    vv = f'"{v}"'
+                props_list.append(f'"{kk}": {vv}')
+            propriedades_str = "{" + ", ".join(props_list) + "}"
+        
+        # Format relations as list of dicts
+        relacoes_str = ""
+        if relacoes:
+            rel_list = []
+            for rel in relacoes:
+                if isinstance(rel, dict):
+                    rel_items = []
+                    for k, v in rel.items():
+                        kk = str(k)
+                        if isinstance(v, str):
+                            vv = f'"{v.replace(chr(34), chr(39))}"'
+                        elif isinstance(v, bool):
+                            vv = str(v)  # True/False (round-trip com literal_eval)
+                        elif isinstance(v, (int, float)):
+                            vv = str(v)
+                        else:
+                            vv = f'"{v}"'
+                        rel_items.append(f'"{kk}": {vv}')
+                    rel_list.append("{" + ", ".join(rel_items) + "}")
+            relacoes_str = "[" + ", ".join(rel_list) + "]"
+        
         linhas = [
             "---",
             f"titulo: {titulo}",
-            f"atualizado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         ]
+        if tipo_entidade:
+            linhas.append(f"tipo_entidade: {tipo_entidade}")
+        if propriedades_str:
+            linhas.append(f"propriedades: {propriedades_str}")
+        if relacoes_str:
+            linhas.append(f"relacoes: {relacoes_str}")
+        linhas.append(f"atualizado: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
         if etiquetas:
             linhas.append("tags: [" + ", ".join(etiquetas) + "]")
         if links:
             linhas.append("links: [" + ", ".join(str(l) for l in links) + "]")
-        if aliases is not None:
-            # Ensure aliases is a list of strings
-            aliases_lista = [str(a).strip() for a in aliases if str(a).strip()]
-            if aliases_lista:
-                linhas.append("aliases: [" + ", ".join(aliases_lista) + "]")
+        if aliases_lista:
+            linhas.append("aliases: [" + ", ".join(aliases_lista) + "]")
         linhas += ["---", "", corpo.strip(), ""]
 
         with open(caminho, "w", encoding="utf-8") as f:
@@ -311,13 +407,11 @@ def append_to_note(titulo: str, texto: str) -> str:
 
 
 def ler(titulo: str) -> str | None:
-    """Lê o corpo de uma nota, sem o frontmatter."""
+    """Lê o corpo de uma nota, sem o frontmatter. Resolve typos para a nota canônica."""
     try:
-        caminho = _caminho(titulo)
-        if not os.path.exists(caminho):
+        texto = _ler_raw(titulo)
+        if texto is None:
             return None
-        with open(caminho, "r", encoding="utf-8") as f:
-            texto = f.read()
         partes = texto.split("---", 2)
         return partes[2].strip() if len(partes) == 3 else texto.strip()
     except Exception as e:
@@ -326,7 +420,7 @@ def ler(titulo: str) -> str | None:
 
 
 def listar() -> list[dict]:
-    """Lista as notas do vault com título, tags e caminho."""
+    """Lista as notas do vault com título, tags, tipo_entidade, propriedades, relações, corpo e caminho."""
     try:
         pasta = _pasta_vault()
         if not os.path.isdir(pasta):
@@ -340,7 +434,19 @@ def listar() -> list[dict]:
                 texto = f.read()
             titulo = nome[:-3].replace("-", " ")
             etiquetas = []
-            for linha in texto.splitlines():
+            tipo_entidade = None
+            propriedades = []
+            relacoes = []
+            frontmatter = ""
+            corpo = texto
+            if texto.startswith("---"):
+                partes = texto.split("---", 2)
+                if len(partes) >= 2:
+                    frontmatter = partes[1]
+                    # corpo = o que vem depois do segundo "---"
+                    if len(partes) >= 3:
+                        corpo = partes[2].strip()
+            for linha in frontmatter.splitlines():
                 if linha.startswith("titulo:"):
                     titulo = linha.split(":", 1)[1].strip()
                 elif linha.startswith("tags:"):
@@ -349,9 +455,18 @@ def listar() -> list[dict]:
                         linha.split(":", 1)[1].strip().strip("[]").split(",")
                         if t.strip()
                     ]
+                elif linha.startswith("tipo_entidade:"):
+                    tipo_entidade = linha.split(":", 1)[1].strip()
+            if frontmatter:
+                propriedades = _frontmatter_objeto(frontmatter, "propriedades")
+                relacoes = _frontmatter_objeto(frontmatter, "relacoes")
             notas.append({
                 "titulo": titulo,
                 "tags": etiquetas,
+                "tipo_entidade": tipo_entidade,
+                "propriedades": propriedades,
+                "relacoes": relacoes,
+                "corpo": corpo,
                 "caminho": caminho,
             })
         return notas
@@ -382,6 +497,36 @@ def apagar(titulo: str) -> bool:
     except Exception as e:
         log_erro("vault", str(e))
         return False
+
+
+def obter_relacoes(titulo: str) -> list[dict]:
+    """Retorna as relações estruturadas de uma nota, ou lista vazia se não existir."""
+    try:
+        texto = _ler_raw(titulo)
+        if not texto:
+            return []
+        partes = texto.split("---", 2)
+        if len(partes) < 2:
+            return []
+        return _frontmatter_objeto(partes[1], "relacoes")
+    except Exception as e:
+        log_erro("vault", str(e))
+        return []
+
+
+def obter_propriedades(titulo: str) -> list[dict]:
+    """Retorna as propriedades estruturadas de uma nota, ou lista vazia se não existir."""
+    try:
+        texto = _ler_raw(titulo)
+        if not texto:
+            return []
+        partes = texto.split("---", 2)
+        if len(partes) < 2:
+            return []
+        return _frontmatter_objeto(partes[1], "propriedades")
+    except Exception as e:
+        log_erro("vault", str(e))
+        return []
 
 
 def contexto(limite=LIMITE_CONTEXTO) -> str:

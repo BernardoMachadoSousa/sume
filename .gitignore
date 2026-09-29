@@ -16,3 +16,5 @@ diagnostico.wav
 dados/vault/
 *.log
 interface/backup/
+dados/backups/
+test_vault/

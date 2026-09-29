@@ -137,6 +137,36 @@ class TestCerebroSalvarFato(unittest.TestCase):
         msg = salvar_fato("minha namorada é Malu")
         self.assertIn("Malu", msg)
 
+    def test_deduplicacao_de_typos(self):
+        from modulos.cerebro import salvar_fato_sobre
+        from modulos.vault import obter_ou_criar_nota, resolver_entidade
+
+        obter_ou_criar_nota("Carolina Mendes")
+        salvar_fato_sobre("Carolna", "tem como cor favorita Azul")
+
+        self.assertEqual(resolver_entidade("Carolna"), "Carolina Mendes")
+        caminho = obter_ou_criar_nota("Carolina Mendes")
+        with open(caminho, "r", encoding="utf-8") as f:
+            texto = f.read()
+        self.assertIn("Azul", texto)
+        self.assertIn("Carolna", texto)
+        self.assertFalse(os.path.exists(os.path.join(VAULT_TMP, "carolna.md")))
+
+        salvar_fato_sobre("Eu", "gosta de programar em python")
+        nota_eu = _ler_nota("Bernardo")
+        self.assertIn("programar em python", nota_eu)
+
+    def test_duvida_revisa_entidade(self):
+        from modulos.vault import obter_ou_criar_nota, resolver_entidade
+        obter_ou_criar_nota("Pedro Almeida")
+        self.assertIsNone(resolver_entidade("Paulo Almeida"))
+        caminho = obter_ou_criar_nota("Paulo Almeida")
+        with open(caminho, "r", encoding="utf-8") as f:
+            texto = f.read()
+        self.assertIn("revisar_entidade", texto)
+        self.assertIn("[!WARNING]", texto)
+        self.assertIn("Pedro Almeida", texto)
+
     def test_fato_livre_sobre_entidade(self):
         from modulos.cerebro import salvar_fato_sobre
         salvar_fato_sobre("Malu", "gosta de café")
