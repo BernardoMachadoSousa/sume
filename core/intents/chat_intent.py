@@ -1,2 +1,3 @@
 def detectar(comando: str) -> tuple | None:
-    return ("CHAT", comando, 1.0)
+    # Chat intent is a fallback; return None to let Nexus core handle fallback when no other intent matches.
+    return None

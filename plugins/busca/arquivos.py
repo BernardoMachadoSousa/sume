@@ -125,3 +125,41 @@ def buscar(termo: str) -> List[Dict[str, Any]]:
         resultados = semantic.combinar_scores(resultados, peso_tfidf=0.6)
     
     return resultados
+
+
+def buscar_por_nome(termo: str, limite: int = 10) -> List[Dict[str, Any]]:
+    if not termo or not termo.strip():
+        return []
+
+    termo_lower = termo.lower().strip()
+    extensoes = _get_file_extensions()
+    resultados = []
+
+    for base_path in _get_search_paths():
+        for root, dirs, files in os.walk(base_path):
+            dirs[:] = [d for d in dirs if not d.startswith('.') and not d.startswith('$')]
+            for file in files:
+                if not _should_index_file(os.path.join(root, file), extensoes):
+                    continue
+                nome_lower = file.lower()
+                nome_sem_ext, _ = os.path.splitext(nome_lower)
+                if termo_lower == nome_lower or termo_lower == nome_sem_ext:
+                    score = 1.0
+                elif nome_sem_ext.startswith(termo_lower) or nome_lower.startswith(termo_lower):
+                    score = 0.9
+                elif termo_lower in nome_sem_ext:
+                    score = 0.8
+                elif termo_lower in nome_lower:
+                    score = 0.7
+                elif all(p in nome_lower for p in termo_lower.split()):
+                    score = 0.55
+                else:
+                    continue
+                resultados.append({
+                    "nome": file,
+                    "caminho": os.path.join(root, file),
+                    "score": score,
+                })
+
+    resultados.sort(key=lambda r: (-r["score"], len(r["nome"])))
+    return resultados[:limite]

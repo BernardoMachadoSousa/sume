@@ -21,6 +21,7 @@ PADRAO = {
     "silencios_para_parar": 1.2,
     "compartilhar_conteudo_nuvem": False,  # enviar trechos de notas/arquivos para IA remota?
     "groq_api_key": "",  # chave da Groq API (opcional; pode usar env GROQ_API_KEY)
+    "caminho_obsidian": r"C:\Users\Bernardo Jonas\Documents\Obsidian Vault",  # Pasta principal do Vault
     "pastas_busca": [
         "Documents",
         "Desktop",

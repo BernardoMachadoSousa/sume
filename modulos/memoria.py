@@ -153,6 +153,11 @@ def limpar_sessao():
 
 def guardar_nome(nome: str) -> str:
     guardar("nome_usuario", nome, PERMANENTE)
+    try:
+        from modulos.cerebro import _garantir_nota_usuario
+        _garantir_nota_usuario()
+    except Exception:
+        pass
     return f"Prazer, {nome}! Vou me lembrar disso."
 
 def obter_nome() -> str | None:
@@ -188,17 +193,10 @@ def processar_memoria(comando: str) -> str | None:
     original = comando
     comando = comando.lower().strip()
 
-    # O nome é dado próprio: extrai do texto original, antes do lower(),
-    # senão "meu nome é Bernardo" seria guardado como "bernardo".
-    if "meu nome é" in comando:
-        nome = _extrair_nome(original, "meu nome é")
-        return guardar_nome(nome)
-
-    if "me chamo" in comando:
-        nome = _extrair_nome(original, "me chamo")
-        return guardar_nome(nome)
-
     if "meu nome" in comando or "quem sou eu" in comando:
+        # Se contiver 'é', pode estar dizendo o novo nome ("meu nome é X") - deixa o cerebro_intent.py cuidar disso
+        if " é " in comando and not "qual é" in comando and not "qual e" in comando:
+            return None
         nome = obter_nome()
         if nome:
             return f"Seu nome é {nome}."
@@ -209,12 +207,17 @@ def processar_memoria(comando: str) -> str | None:
 
     if any(p in comando for p in ("anote", "anota", "guarde", "guarda",
                                   "lembre-se", "lembra que", "salve")):
+        if "que" not in comando.split():
+            return None # Deixa pro cerebro resolver
         return _processar_anotar(original)
 
     if any(p in comando for p in ("o que você sabe", "o que voce sabe",
                                   "quais memórias", "quais memorias",
                                   "mostre memórias", "mostre memorias",
                                   "minhas memórias", "minhas memorias")):
+        import re as _re
+        if _re.search(r"sobre (?:a |o )?(\w+)", comando):
+            return None
         return _processar_listar()
 
     if any(p in comando for p in ("no vault", "no obsidian", "anote no vault",

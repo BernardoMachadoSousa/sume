@@ -3,6 +3,8 @@ def detectar(comando: str) -> tuple | None:
         if comando.startswith(prefixo):
             alvo = comando[len(prefixo):].strip()
             if alvo:
+                if alvo.startswith(("arquivo ", "o arquivo ", "documento ", "o documento ", "pdf ", "o pdf ")):
+                    return None
                 # "abrir pasta X" também casa com folder_intent (OPEN_FOLDER)
                 # com confiança parecida - de propósito, pra virar ambiguidade
                 # real em vez de decidir por acaso pela ordem da lista.

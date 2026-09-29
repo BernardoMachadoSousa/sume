@@ -1,0 +1,28 @@
+1. Etapa 5 incompleta — e é a mais crítica
+
+O vault.py existe e funciona bem como módulo isolado. O memoria.py tem as 3 camadas. Mas nenhum dos dois está conectado ao fluxo principal de comandos de forma utilizável. Não existe um intent que fale lembre-se que X e salve no vault. Não existe um intent que consulte o vault e traga resultado. O reminder_intent.py existe para lembretes com horário, mas memória semântica (fatos, contexto, perfil) ainda não tem detecção de intent funcionando.
+
+2. Etapa 4 (interface) — backend pronto, frontend não atualizado
+
+O main.py expõe ver_memorias() e ultima_intencao(), mas o interface/index.html e o script.js ainda são os da versão anterior — sem painel de memória, sem histórico de conversa visível, sem indicador de confiança. A ponte está construída do lado Python, mas o HTML ainda não usa.
+
+3. Teste da Etapa 3 desatualizado
+
+O testes/teste_vad.py ainda mocka o webrtcvad.Vad.is_speech, que não existe mais — o VAD foi reimplementado em voz_vad.py. O teste vai falhar ou testar a coisa errada.
+
+4. reminder_intent.py não está registrado no nexus_core.py
+
+O intent existe, os handlers REMINDER_SET, REMINDER_LIST, REMINDER_CANCEL estão nos handlers, mas reminder_intent não foi adicionado à lista INTENTS do nexus_core.py. Ou seja, você pode pedir um lembrete por voz agora e ele vai cair no chat — nunca vai chegar no handler certo.
+
+Resumo do status real das etapas
+Etapa 1 — ✅ Concluída
+Etapa 2 — ✅ Concluída
+Etapa 3 — ✅ VAD próprio implementado, mas teste desatualizado
+Etapa 4 — 🔄 Backend pronto, frontend desatualizado
+Etapa 5 — 🔄 Vault e memória em camadas existem, mas sem intent conectado
+Etapas 6–26 — 📋 Planejadas
+Próximos passos por prioridade
+Registrar reminder_intent no nexus_core.py — 5 linhas, bug crítico, o usuário pede lembrete e nada acontece
+Corrigir teste_vad.py — testar o VAD que realmente existe, não o que foi descartado
+Conectar memória semântica — intent para lembre-se que X / o que você sabe sobre Y apontando pro vault
+Atualizar o frontend — usar as APIs que o main.py já expõe (histórico, painel de memória, confiança)

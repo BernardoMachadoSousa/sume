@@ -84,6 +84,9 @@ def _interpretar_comando(comando: str) -> tuple:
     candidatos.sort(key=lambda c: c[2], reverse=True)
     melhor = candidatos[0]
 
+    # DEBUG: print candidates for troubleshooting
+    # print(f"DEBUG _interpretar_comando: comando={comando!r}, candidatos={candidatos}")
+
     if melhor[2] < LIMIAR_CONFIANCA_MINIMA:
         return ("CHAT", comando, 1.0)
 
@@ -99,6 +102,7 @@ def _pergunta_ambiguidade(candidatos: list) -> str:
     base_desc = {
         "OPEN_APP": "abrir um aplicativo",
         "OPEN_FOLDER": "abrir uma pasta",
+        "OPEN_FILE": "abrir um arquivo",
         "CLOSE_APP": "fechar um aplicativo",
         "GET_TIME": "saber as horas",
         "GET_DATE": "saber a data",
@@ -107,7 +111,9 @@ def _pergunta_ambiguidade(candidatos: list) -> str:
         "EXIT": "encerrar o Sumé",
         "REMINDER_SET": "criar um lembrete",
         "REMINDER_LIST": "ver nossos lembretes",
-        "REMINDER_CANCEL": "cancelar um lembrete"
+        "REMINDER_CANCEL": "cancelar um lembrete",
+        "CEREBRO_SAVE": "salvar um fato no cérebro (vault)",
+        "CEREBRO_READ": "ler fatos do cérebro (vault)",
     }
     base_desc.update(_DESCRICAO_ACAO) # Une as descricoes dos plugins
     

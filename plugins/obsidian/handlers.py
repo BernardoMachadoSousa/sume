@@ -4,15 +4,16 @@ from core.router import registrar
 from modulos.ia_conversacional import conversar
 from utils.logger import info as log_info
 from utils.resultado import Resultado
+from utils import config as cfg
 
-VAULT_PATH = r"C:\Users\Bernardo Jonas\Documents\Obsidian Vault"
 
 def buscar_notas_obsidian(query: str) -> str:
     """Busca o termo diretamente nos arquivos Markdown do Vault."""
-    if not os.path.exists(VAULT_PATH):
-        return "Não consegui encontrar sua pasta do Obsidian no caminho padrão."
+    vault_path = cfg.get("caminho_obsidian")
+    if not vault_path or not os.path.exists(vault_path):
+        return "Não consegui encontrar sua pasta do Obsidian na configuração."
     
-    arquivos_md = glob.glob(os.path.join(VAULT_PATH, "**", "*.md"), recursive=True)
+    arquivos_md = glob.glob(os.path.join(vault_path, "**", "*.md"), recursive=True)
     resultados = []
     
     # Extrai palavras chave vazadas da query. Ex: "pesquise no obsidian sobre python" -> "python"

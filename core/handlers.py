@@ -105,3 +105,56 @@ def _buscar_notas(alvo: str, comando: str):
 @registrar("BUSCAR_ARQUIVOS")
 def _buscar_arquivos(alvo: str, comando: str):
     return buscar_arquivos_handler(alvo)
+
+
+@registrar("OPEN_FILE")
+def _abrir_arquivo(alvo: str, comando: str):
+    if not alvo:
+        return None
+    from modulos.arquivos import abrir
+    resposta = abrir(alvo)
+    if not resposta:
+        return None
+    return Resultado(True, resposta)
+
+
+@registrar("CEREBRO_SAVE")
+def _cerebro_save(alvo: str, comando: str):
+    from modulos.cerebro import salvar_fato
+    resposta = salvar_fato(alvo or comando)
+    if not resposta:
+        return None
+    return Resultado(True, resposta)
+
+
+@registrar("CEREBRO_READ")
+def _cerebro_read(alvo: str, comando: str):
+    from modulos.cerebro import ler_fatos
+    import re
+    c = (alvo or comando).lower()
+    
+    # Ex: o que voce sabe sobre a malu
+    m = re.search(r"sobre (?:a |o |o )?([\w\s]+)", c)
+    entidade = None
+    if m:
+        entidade = m.group(1).replace("?", "").strip()
+    
+    if not entidade:
+        m2 = re.search(r"d[ao] ([\w\s]+)", c)
+        if m2:
+            entidade = m2.group(1).replace("?", "").strip()
+            
+    if not entidade:
+        m3 = re.search(r"quem [eé] ([\w\s]+)", c)
+        if m3:
+            entidade = m3.group(1).replace("?", "").strip()
+    
+    # Se ainda n achar e for pra "mim" ("quando eu nasci", "qnd a gente")
+    if not entidade and any(p in c for p in ["eu", "meu", "minha"]):
+        entidade = "eu"
+        
+    if not entidade:
+        # Pega a provável última palavra (ex: "quem é Bernardo")
+        entidade = c.split()[-1].strip("?.!")
+        
+    return Resultado(True, ler_fatos(entidade))
